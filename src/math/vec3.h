@@ -18,7 +18,7 @@ class vec3 {
 
 		vec3 operator -() const { return vec3(-e[0], -e[1], -e[2]); } // -negates the vector, inverts it
 		double operator[](int i) const { return e[i];}
-		double& operator[](int i) {retunr e[i]; } // retrns a refernce, & allows write access, ex v[0] = 5.0;
+		double& operator[](int i) {return e[i]; } // retrns a refernce, & allows write access, ex v[0] = 5.0;
 		vec3& operator+=(const vec3& v) { //vec3& ?
 			e[0] += v.e[0]; //this.e[0] += v.e[0]
 			e[1] += v.e[1];
