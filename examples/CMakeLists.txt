@@ -22,4 +22,14 @@ target_link_libraries(test_readPNGFile ${Boost_PROGRAM_OPTIONS_LIBRARIES})
 target_link_libraries(test_readPNGFile PNG::PNG)
 target_link_libraries(test_readPNGFile ZLIB::ZLIB)
 
+add_executable(
+  buffertest
+  buffertest.cpp
+  )
+target_include_directories(buffertest PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(buffertest PRIVATE
+	cs4212-util
+)
 
