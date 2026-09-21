@@ -33,3 +33,13 @@ target_link_libraries(buffertest PRIVATE
 	cs4212-util
 )
 
+add_executable(
+  vectest
+  vectest.cpp
+  )
+target_include_directories(vectest PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(vectest PRIVATE
+	cs4212-util
+)
