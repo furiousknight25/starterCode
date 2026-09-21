@@ -1,6 +1,7 @@
 #include "Framebuffer.h"
 #include <fstream>
 #include <algorithm>
+#include "png++/png.hpp"
 
 Framebuffer::Framebuffer(int width, int height) //what is this syntax?
     : m_width(width), m_height(height), m_pixels(width * height) {}
@@ -74,4 +75,20 @@ bool Framebuffer::write_ppm(const std::string& filepath) const {
     }
 
     return true;
+}
+
+bool Framebuffer::write_png(const std::string& filepath) const {
+    try {
+        png::image<png::rgb_pixel> image(m_width, m_height);
+        for (int y = 0; y < m_height; ++y) {
+            for (int x = 0; x < m_width; ++x) {
+                ColorRGB pixel = get_pixel(x, y);
+                image[y][x] = png::rgb_pixel(pixel.r, pixel.g, pixel.b);
+            }
+        }
+        image.write(filepath);
+        return true;
+    } catch (...) {
+        return false;
+    }
 }

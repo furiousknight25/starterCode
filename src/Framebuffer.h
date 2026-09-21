@@ -31,6 +31,7 @@ public:
 
     // Exporting image
     bool write_ppm(const std::string& filepath) const;
+    bool write_png(const std::string& filepath) const;
 
 private:
     int m_width;
