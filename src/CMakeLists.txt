@@ -3,6 +3,9 @@ add_library (cs4212-util
   handleGraphicsArgs.cpp handleGraphicsArgs.h
   model_obj.cpp model_obj.h
   Framebuffer.cpp Framebuffer.h
+  shapes/shape.h
+  shapes/Sphere.cpp shapes/Sphere.h
+  shapes/Circle.cpp shapes/Circle.h
 )
 target_compile_definitions(cs4212-util PUBLIC HAS_GLM)
 target_include_directories(cs4212-util PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

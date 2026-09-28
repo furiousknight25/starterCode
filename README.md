@@ -8,3 +8,13 @@ cmake --build buildVCPkg --target utest_vec3 --- builds the tools to run the tes
 
 cmake --build buildVCPkg --target vectest --- builds the tools to run the tests
 ./buildVCPkg/examples/vectest
+
+## Sphere / Ray-Sphere Intersection Unit Tests
+
+cmake --build buildVCPkg --target utest_sphere --- builds the unit tests for Sphere and ray-sphere intersections
+./buildVCPkg/utests/utest_sphere -s --- runs the sphere tests and outputs all passing assertions
+
+## Sphere Render (Ray-Sphere Flag Generation)
+
+cmake --build buildVCPkg --target SphereRender --- builds the sphere renderer
+./buildVCPkg/examples/SphereRender --- renders Bangladeshi flag to output.png 

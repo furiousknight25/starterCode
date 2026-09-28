@@ -43,3 +43,17 @@ target_include_directories(vectest PRIVATE
 target_link_libraries(vectest PRIVATE
 	cs4212-util
 )
+
+add_executable(
+  SphereRender
+  SphereRender.cpp
+  )
+target_include_directories(SphereRender PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(SphereRender PRIVATE
+	cs4212-util
+	PNG::PNG
+	ZLIB::ZLIB
+)
+
