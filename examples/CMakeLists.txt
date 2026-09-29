@@ -57,3 +57,17 @@ target_link_libraries(SphereRender PRIVATE
 	ZLIB::ZLIB
 )
 
+add_executable(
+  SceneRender
+  SceneRender.cpp
+  )
+target_include_directories(SceneRender PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(SceneRender PRIVATE
+	cs4212-util
+	PNG::PNG
+	ZLIB::ZLIB
+)
+
+

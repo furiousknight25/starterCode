@@ -214,6 +214,16 @@ public:
         vec3 ray_direction = pixel00_offset + (float(i) * pixel_delta_u) + (float(j) * pixel_delta_v);
         return ray(camera_center, ray_direction);
     }
+
+    ray generateRay(float u_pixel, float v_pixel) override {
+        vec3 ray_direction = pixel00_offset + (u_pixel * pixel_delta_u) + (v_pixel * pixel_delta_v);
+        return ray(camera_center, ray_direction);
+    }
+
+    ray generateRay(float u_pixel, float v_pixel) const override {
+        vec3 ray_direction = pixel00_offset + (u_pixel * pixel_delta_u) + (v_pixel * pixel_delta_v);
+        return ray(camera_center, ray_direction);
+    }
 };
 
 // Type aliases for naming flexibility

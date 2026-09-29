@@ -4,8 +4,12 @@ add_library (cs4212-util
   model_obj.cpp model_obj.h
   Framebuffer.cpp Framebuffer.h
   shapes/shape.h
+  shapes/hit_record.h
   shapes/Sphere.cpp shapes/Sphere.h
   shapes/Circle.cpp shapes/Circle.h
+  shapes/Triangle.cpp shapes/Triangle.h
+  shapes/ShapeList.cpp shapes/ShapeList.h
+  math/interval.h
 )
 target_compile_definitions(cs4212-util PUBLIC HAS_GLM)
 target_include_directories(cs4212-util PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

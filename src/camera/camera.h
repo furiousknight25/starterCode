@@ -111,4 +111,6 @@ public:
     // Pure virtual method to generate a ray passing through pixel (i, j)
     virtual ray generateRay(int i, int j) = 0;
     virtual ray generateRay(int i, int j) const = 0;
+    virtual ray generateRay(float u, float v) { return generateRay(int(u), int(v)); }
+    virtual ray generateRay(float u, float v) const { return generateRay(int(u), int(v)); }
 };

@@ -7,5 +7,5 @@ class Circle : public Sphere {
     public:
         Circle() = default;
         Circle(const vec3 &center, double r) : Sphere(center, r) {}
-        Circle(const vec3 &center, double r, const vec3 &rot) : Sphere(center, r, rot) {}
+        Circle(const vec3 &center, double r, const vec3 &rot) : Sphere(center, r, rot, color(0.8, 0.2, 0.2)) {}
 };
