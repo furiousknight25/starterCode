@@ -24,11 +24,12 @@ inline double random_double() {
 ShapeList build_multishape_scene() {
     ShapeList world;
 
+    //sphere
     auto sphere = std::make_shared<Sphere>(point3(-0.9, 0.2, -2.8), 0.35);
     sphere ->use_normal_coloring = true;
     world.add(sphere);
 
-    // 4. Foreground Triangle (flat golden amber, occluding the right side of the central sphere)
+    //close triangle
     world.add(std::make_shared<Triangle>(
         point3(0.15, -0.4, -1.8),
         point3(1.05, -0.4, -1.8),
@@ -36,7 +37,7 @@ ShapeList build_multishape_scene() {
         color(0.95, 0.75, 0.10)
     ));
 
-    // 5. Background Triangle (flat purple, peeking behind left sphere and ground)
+    //overlap triangle
     world.add(std::make_shared<Triangle>(
         point3(-1.6, -0.1, -4.0),
         point3(-0.4, -0.1, -4.0),
