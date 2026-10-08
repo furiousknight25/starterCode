@@ -14,7 +14,7 @@ int Framebuffer::height() const {
     return m_height;
 }
 
-int Framebuffer::get_index(int x, int y) const {
+int Framebuffer::get_index(int x, int y) const { //const makes it read only
     return y * m_width + x;
 }
 
