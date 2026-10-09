@@ -46,5 +46,6 @@ bool Triangle::intersect(const ray& r, double t_min, double t_max, hit_record& r
     rec.set_face_normal(r, outward_normal);
     rec.mat_color = default_color;
     rec.is_sphere = false;
+    rec.shader = shader;
     return true;
 }

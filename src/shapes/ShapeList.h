@@ -24,6 +24,14 @@ public:
     bool intersect(const ray& r, interval ray_t, hit_record& rec) const override {
         return intersect(r, ray_t.min, ray_t.max, rec);
     }
+
+    // Point Light in the Scene (default from lab instructions: (0, 10, 5))
+    point3 light_pos{0.0, 10.0, 5.0};
+    const point3& get_light_position() const { return light_pos; }
+    void set_light_position(const point3& p) { light_pos = p; }
+
+    // Compute ray color for closest shape, using its shader
+    color computeRayColor(const ray& r, const color& bg_color = color(0.2, 0.2, 0.2)) const;
 };
 
 using Scene = ShapeList;

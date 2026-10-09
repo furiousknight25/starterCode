@@ -1,187 +1,136 @@
-Reading and Weekend Homework - Preparing to Shade and Antialias
-Reading
+Lab - Implement the Shader Infrastructure
+Learning Outcomes
 
-Before class on Tuesday, you need to have read
+    Create the base Shader abstract class that defines a rayColor function
+    Add in the HitStructure or HitRecord structure to convey information about the closest Shape
+    Implement the basic Lambertian (diffuse) and Blinn-Phong (specular) Shaders to render a matte sphere and a shiny sphere
+    Add a Point Light (either through a class if you wish) or you can hard-code the Point Light for now.
 
-    Section 6 (Surface Normals and Multiple Objects) and Section 8 (Antialiasing) and Section 9.1 (Diffuse Materials: A Simple Diffuse Material) from Ray Tracing in One Weekend Book Link
+Your goal in this lab is to generate at least two images showing Lambertian and Blinn-Phong shaded Spheres.
+What To Do In Lab
+
+I expect students to show up to lab and work on the week's tasks. The benefit of lab will be to get something done to help progress your code, learn some things about rendering, AND get support from (or provide support to) your peers.
+
+For lab, your goal within the hour will be to try to create a rendering of a sphere that uses at least Lambertian shading.
+Objectives
+
+You must implement the base Shader class, and derive both Lambertian and Blinn-Phong from it. I would start with Lambertian. All Shaders should be able to provide a color in response to the following virtual function (if you use vec3 rather than color, then this can return a vec3):
+
+   virtual color rayColor( const HitStructure &h ) = 0;
 
  
-Weekend Homework
+All Shapes Have a Shader
 
-You need to be working on your renderers, little by little.  The goal for the weekend will be to be able to render
-
-    Triangles
-    Multiple Spheres and Triangles so that your code selects the correct t values to show you the closest object with farther objects occluded correctly.
-
-Post an image of your code rendering either a triangle or a scene with multiple shapes. Render all images at 200x200. If you create your own scene that you want to share, be sure to include the various parameters so someone else can render it too if they want.
-
-The slides from this last week can help you with the Triangle intersection code.
+One other component you will need to consider is that all Shapes in our renderers will need a Shader. So, you will want to likely modify your shapes to either contain a default Shader if none is given (normal shader might be a good choice here), or allow you to set a Shader (std::shared_ptr<Shader>) with some set function. That way you can instance a Lambertian shader and provide it to one of your Spheres.
 
  
-What you Need to Post to the Discussion
+Hit Structure is Needed
 
-    Your image!!  You have to post an image showing your rendering output.
+You will also need to make sure you have the HitStructure (or HitRecord) in place. The slides from Tuesday have some information on what you minimally need in your Hit Structure.
 
----
+ 
+Point Light
 
-### Discussion Response & Writeup
+For these very basic shaders, we need to know the direction to a single light from the point of intersection.  To compute this, you will need some notion of a Point Light in your Scene class so you can query its position (a simple vec3). We can assume the point light's color is white for now (1,1,1).  So, be sure to store in your Scene a Point Light. You are also welcome to hard-code the Point Light for this lab while you are testing Shading out. If you do hard-code the light position into each shader, I would set the position to something like (0, 10, 5) so the light is above and slightly behind the default camera.
 
-#### 1. Scene Parameters (for Reproducibility)
-All images are rendered at **200x200** resolution with a perspective camera positioned at the origin looking along the -z axis.
+ 
+Shading Models
 
-- **Camera Configuration**:
-  - Image Width: `200`
-  - Image Height: `200`
-  - Aspect Ratio: `1.0`
-  - Focal Length: `1.0`
-  - Viewport Height: `2.0`
-  - Camera Center: `point3(0.0, 0.0, 0.0)`
-  - Camera Rotation: `vec3(0.0, 0.0, 0.0)` (pitch = 0°, yaw = 0°, roll = 0°)
+You will want to look over the slides for the computation for the two very basic Shaders (Lambertian and Blinn-Phong).
 
-- **Scene Objects (Front-to-Back Depth Occlusion)**:
-  1. **Foreground Golden Triangle** (partially occluding central sphere):
-     - Vertex 0 ($v_0$): `(0.15, -0.40, -1.80)`
-     - Vertex 1 ($v_1$): `(1.05, -0.40, -1.80)`
-     - Vertex 2 ($v_2$): `(0.60,  0.55, -1.80)`
-     - Color: RGB `(0.95, 0.75, 0.12)` (Golden Amber)
-     - Depth ($z = -1.80$, closest object on the right side)
+Link to Slides
 
-  2. **Central Red Sphere**:
-     - Center: `point3(0.0, 0.0, -2.5)`
-     - Radius: `0.50`
-     - Color: RGB `(0.85, 0.18, 0.18)` (Crimson Red)
-     - Depth (front surface at $z = -2.00$; occluded by foreground triangle on its right side)
+Lambertian
 
-  3. **Left Floating Blue Sphere**:
-     - Center: `point3(-0.90, 0.20, -2.80)`
-     - Radius: `0.35`
-     - Color: RGB `(0.18, 0.45, 0.85)` (Sky Blue)
-     - Depth (front surface at $z = -2.45$; occludes background purple triangle)
+The basic Lambertian shading approximation simply does a dot product between the normal vector and the direction the light. That is it!  However, one gotcha is that if the dot product is negative, the surface is NOT being lit, so you better return 0 then!  Something like this will be helpful:
 
-  4. **Ground Green Sphere**:
-     - Center: `point3(0.0, -100.5, -3.0)`
-     - Radius: `100.0`
-     - Color: RGB `(0.35, 0.55, 0.35)` (Muted Grass Green)
-     - Top horizon surface at $y = -0.50$
+   float nDotl = std::max( 0.0, dot( normal, lightDir ) );
+   vec3 lambertShade( nDotl, nDotl, nDotl );
 
-  5. **Background Purple Triangle** (peeking behind left sphere):
-     - Vertex 0 ($v_0$): `(-1.60, -0.10, -4.00)`
-     - Vertex 1 ($v_1$): `(-0.40, -0.10, -4.00)`
-     - Vertex 2 ($v_2$): `(-1.00,  1.25, -4.00)`
-     - Color: RGB `(0.55, 0.18, 0.75)` (Royal Purple)
-     - Depth ($z = -4.00$; farthest object in the scene)
+If you get creative, you can simply multiple (component by component) the diffuse color of the material with the nDotl value to get nicely colored, shaded and lit shapes. You should get an image like this:
 
-- **Standalone Triangle Scene Parameters**:
-  - Triangle vertices: `v0(-0.7, -0.5, -2.0)`, `v1(0.7, -0.5, -2.0)`, `v2(0.0, 0.7, -2.0)`
-  - Color: RGB `(0.18, 0.75, 0.45)` (Emerald Green)
+One Lambertian Sphere
 
-- **Generated Output Images (all 200x200, normal visualization on spheres & flat colors on triangles)**:
-  - `scene_multishape_200x200.png`: Full multi-shape scene with surface normal visualization on spheres, flat colors on triangles, depth occlusion, and 16 spp antialiasing.
-  - `triangle_render_200x200.png`: Standalone flat-colored triangle render.
-  - `scene_aliased_1spp_200x200.png`: 1 sample per pixel render showing aliasing along silhouette edges.
+ 
 
----
+Blinn-Phong
 
-#### 2. Reading Questions Addressed
+Blinn-Phong simply ADDs a specular (shiny) component to the Lambertian component above so getting Lambertian working first would be advised.  With Blinn-Phong, you need to compute a half-vector which is simply the vector that combines the view direction (where the ray came from) and the light direction.  The half-vector is then dotted with the normal vector to determine how "shiny" or how large of a specular highlight we might apply.  We raise that dot product to the Phong exponent using the std::pow function.  The larger the Phong Exponent, the tighter and smaller the specular highlight. For example, your Blinn-Phong color will be something like this computation:
 
-##### Q: What is meant by the term diffuse material? How would you describe what a diffuse material is? What is a type of diffuse material in the real world?
-**A:** A diffuse (or matte / Lambertian) material is a non-shiny surface that does not produce sharp mirror-like specular reflections. When light strikes a diffuse surface, microscopic irregularities and surface roughness scatter incoming photons in random directions across the hemisphere surrounding the surface normal. Because light is scattered uniformly in all directions regardless of the viewer's orientation, the apparent brightness of an ideal diffuse surface depends primarily on the cosine of the angle between the incoming light vector and the surface normal (Lambert's Cosine Law: $I \propto \mathbf{N} \cdot \mathbf{L}$), rather than the observer's viewing angle. 
+  lambertianComponent + std::pow( std::max(0.0, normal.dot(halfVector)), phongExp );
 
-Common real-world examples of diffuse materials include blackboard chalk, unglazed terracotta/clay pottery, matte drywall paint, cotton fabric, and raw cardboard.
+An example of Blinn-Phong shaded spheres ranging from Phong Exponent of 2 to 512 is shown below:
 
-##### Q: Is there an advantage of using an interval class for your code and how might you refactor your code to use this idea?
-**A:** Yes, introducing an `interval` class provides several major software engineering and algorithmic advantages:
-1. **Encapsulation and Clarity**: Instead of repeatedly passing loose pairs of `double t_min, double t_max` through every function call in the intersection pipeline, an `interval ray_t` struct cleanly bundles bounds into a cohesive unit.
-2. **Domain Invariants and Utility Methods**: The interval class encapsulates helper methods such as `contains(x)` (inclusive check $[min, max]$), `surrounds(x)` (exclusive check $(min, max)$), `clamp(x)`, and `expand(delta)`. This prevents off-by-one and boundary clipping bugs.
-3. **Hierarchy and BVH Readiness**: Modern ray tracers rely on Bounding Volume Hierarchies (BVH) with Axis-Aligned Bounding Boxes (AABB), which are defined simply as three 1D intervals: `interval x, y, z`. Having an interval class makes adding AABB collision checks effortless.
+Image of Phong shading showing 9 spheres with phong exponents ranging from 2 to 512
 
-**Refactoring**: In our codebase, we created `src/math/interval.h` and refactored `Shape::intersect` to accept `interval ray_t`. `ShapeList` initializes the search interval to `[0.001, infinity)` and tightens `ray_t.max = rec.t` whenever a closer intersection is detected, cleanly keeping track of the closest visible hit.
+Q: Did you work with anyone? If so, who?  What help did they provide you and what assistance did you provide for them?
 
-##### Q: Explain in your own words how anti-aliasing makes the jagged edges go away in your rendered images and why?
-**A:** Jagged edges ("jaggies" or spatial aliasing) occur because a digital image is a discrete grid of finite pixels, whereas geometric primitives like spheres and triangles have continuous, infinitely sharp mathematical boundaries. When we cast only a single ray through the exact center of each pixel, the decision is binary: either the ray hits the shape or it hits the background. A pixel that covers 90% of a red sphere and 10% of the blue sky turns 100% red, while its immediate neighbor covering 40% of the sphere and 60% of the sky turns 100% blue. This abrupt step function creates harsh staircase patterns.
+A: I worked mostly on my own in lab, but discussed the half-vector formula with classmates and asked the TA about light direction.
 
-Antialiasing solves this through supersampling (Monte Carlo box filtering). By firing multiple rays randomly distributed throughout the 1x1 square area of each pixel and averaging their color contributions, the pixel's final RGB value represents the exact fractional area of the pixel covered by each object. A pixel spanning the silhouette border becomes a smooth blend (e.g. 70% object color + 30% background color). To human vision, this gradient transition eliminates the staircase effect, producing smooth, crisp edges.
+Q: How do you compute the view direction as simply as possible?
 
-##### Q: Explain how you compute the normal vector for the Sphere and how you can use that to shade your renderings. What might you call this shader?
-**A:** 
-1. **Normal Computation**: For a sphere centered at $\mathbf{C}$ with radius $R$, any intersection point $\mathbf{P}$ on its surface satisfies $|\mathbf{P} - \mathbf{C}| = R$. The outward normal vector points radially outward from the sphere center to the surface point:
-   $$\mathbf{N}_{\text{outward}} = \frac{\mathbf{P} - \mathbf{C}}{R} = \frac{\mathbf{P} - \mathbf{C}}{\|\mathbf{P} - \mathbf{C}\|}$$
-   This vector has unit length ($|\mathbf{N}| = 1$).
-2. **Normal Shading**: Because normal components vary continuously between $[-1.0, 1.0]$, we can linearly map them to the RGB color interval $[0.0, 1.0]$:
-   $$\text{Color}(r, g, b) = 0.5 \times (\mathbf{N} + \begin{pmatrix} 1.0 \\ 1.0 \\ 1.0 \end{pmatrix})$$
-   - Normals pointing toward $+x$ (right) are colored red.
-   - Normals pointing toward $+y$ (up) are colored green.
-   - Normals pointing toward $+z$ (viewer) are colored blue.
-3. **Shader Name**: This is commonly called a **Normal Shader** or **Normal Mapping Visualization Shader**. It is widely used by technical artists and graphics engineers for geometry debugging and surface validation.
+A: Just take the negative of the ray direction: view_dir = unit_vector(-r.direction()). Since the camera ray points from the eye to the intersection point, negating it points back to the camera/eye.
 
----
 
-#### 3. Mandatory Antialiasing Question
+Once these components are in place, you're probably very close to rendering a Lambertian-shaded Sphere! Your goal will be to render scenes with Lambertian and Blinn-Phong shaders. 
 
-##### Q: With the antialiasing approach described in Section 9.1 where we sample the square of the pixel, discuss how the number of samples might cover the full "area" of the pixel? In other words, what type of coverage might you get if you had 8 samples versus 16 or 32 or 64 or 100? Think about what it might mean for you to have "enough" coverage of a pixel.
-**A:** In Section 9.1, antialiasing uses stratified / pseudo-random Monte Carlo sampling over the continuous unit square $[i - 0.5, i + 0.5] \times [j - 0.5, j + 0.5]$ representing each pixel.
 
-- **Coverage Dynamics Across Sample Counts**:
-  - **8 Samples**: 8 randomly placed sample points provide very sparse coverage across the 2D area of a pixel. Large spatial gaps remain unsampled. Along high-contrast geometry silhouettes, the statistical variance is high, resulting in visible graininess, stippling, and edge flickering.
-  - **16 Samples**: A 2x increase in sample density. Low-contrast geometric edges and smooth gradients look significantly cleaner. However, high-frequency corners and steep silhouette edges will still exhibit noticeable noise and uneven transitions.
-  - **32 Samples**: Provides reasonably balanced coverage across the subpixel area. The standard error drops by $\approx \sqrt{2}$, and silhouette edges become smooth to the naked eye at standard viewing distances.
-  - **64 Samples**: Densely populates the subpixel square. Subpixel geometric features (such as thin polygon slivers or grazing sphere silhouettes) are reliably detected. Grain is reduced below perceptual thresholds under normal illumination.
-  - **100+ Samples**: Approaching asymptotic convergence for primary visibility. Because Monte Carlo integration error decreases at a rate of $O(1 / \sqrt{N})$, quadrupling the sample count from 25 to 100 only cuts the statistical error in half. Visual differences between 64 and 100 samples are virtually imperceptible on static direct illumination, though 100+ samples become essential once indirect diffuse bounces (path tracing) are introduced.
+Additional Tips
 
-- **What "Enough" Coverage Means**:
-  In rendering, "enough" coverage is reached when the residual Monte Carlo variance (sampling noise) drops below the **Just Noticeable Difference (JND)** of human visual perception and the 8-bit display quantization threshold ($1 / 256 \approx 0.0039$). At that point, firing additional rays yields diminishing visual returns while quadratically increasing render time. For primary edge antialiasing at 200x200, **16 to 32 samples per pixel** strikes the optimal sweet spot between visual fidelity and computational efficiency.
+The code you are striving for in your main rendering loop will look somewhat like this pseudo-code:
 
----
+Image of main renderer loop for ray generation and scene ray color computation
 
-### Terminal Build and CTest Log
+The code inside the Scene's computeRayColor function might look something like this pseudo-code:
 
-```
-$ cmake --build buildVCPkg
-[ 78%] Built target cs4212-util
-[ 84%] Built target vectest
-[ 85%] Built target SphereRender
-[ 86%] Built target SceneRender
-[ 98%] Built target utest_sphere
-[ 99%] Built target utest_triangle
-[100%] Built target utest_multishape
+Image showing pseudo-code of Scene's computeRayColor function.
 
-$ ctest --test-dir buildVCPkg -E "Failure" --output-on-failure
-Internal ctest changing into directory: /home/collector25061/Documents/GitHub/starterCode/buildVCPkg
-Test project /home/collector25061/Documents/GitHub/starterCode/buildVCPkg
-      Start  1: Simple Success Test ....................................   Passed    0.01 sec
-      Start  2: Vector addition and subtraction properties .............   Passed    0.01 sec
-      Start  3: Scalar multiplication and division .....................   Passed    0.01 sec
-      Start  4: Dot product geometric properties .......................   Passed    0.01 sec
-      Start  5: Cross product direction and anti-commutativity .........   Passed    0.01 sec
-      Start  6: Vector length and normalization .........................   Passed    0.01 sec
-      Start  7: Framebuffer initialization and dimensions ..............   Passed    0.01 sec
-      Start  8: Framebuffer pixel read and write .......................   Passed    0.01 sec
-      Start  9: Framebuffer bounds safety ..............................   Passed    0.01 sec
-      Start 10: Framebuffer clear operation ............................   Passed    0.01 sec
-      Start 11: Camera base dimensions and aspect ratio ................   Passed    0.01 sec
-      Start 12: Perspective camera ray generation ......................   Passed    0.01 sec
-      Start 13: Perspective camera position functionality ..............   Passed    0.01 sec
-      Start 14: Perspective camera rotation functionality ..............   Passed    0.01 sec
-      Start 15: Construction - A ray stores origin and direction .......   Passed    0.01 sec
-      Start 16: Evaluation of Parametric Line ..........................   Passed    0.01 sec
-      Start 17: Immutability of ray internals ..........................   Passed    0.01 sec
-      Start 18: Numerical Robustness ...................................   Passed    0.01 sec
-      Start 19: Sphere Construction and Attributes .....................   Passed    0.01 sec
-      Start 20: Ray-Sphere Intersection - Direct Central Hit ...........   Passed    0.01 sec
-      Start 21: Ray-Sphere Intersection - Off-Center Piercing Hit ......   Passed    0.01 sec
-      Start 22: Ray-Sphere Intersection - Tangent / Grazing Ray ........   Passed    0.01 sec
-      Start 23: Ray-Sphere Intersection - A Miss (No Intersection) .....   Passed    0.01 sec
-      Start 24: Ray-Sphere Intersection - Sphere Behind Ray Origin .....   Passed    0.01 sec
-      Start 25: Ray-Sphere Intersection - Ray Origin Inside Sphere .....   Passed    0.01 sec
-      Start 26: Ray-Sphere Intersection - Translated Sphere Position ...   Passed    0.01 sec
-      Start 27: Polymorphic Shape Interface and Circle Compatibility ...   Passed    0.01 sec
-      Start 28: Triangle Construction and Normal Calculation ...........   Passed    0.01 sec
-      Start 29: Ray-Triangle Intersection - Piercing Hit ...............   Passed    0.01 sec
-      Start 30: Ray-Triangle Intersection - Misses Outside Boundaries ..   Passed    0.01 sec
-      Start 31: Multiple Spheres - Closest Object Occlusion ............   Passed    0.01 sec
-      Start 32: Mixed Scene - Sphere and Triangle Occlusion ............   Passed    0.01 sec
+The code snippets above can guide you and your implementation may be a little different. The key point is that for each camera ray, you need to find out what color it "hits" and you will do that by first locating the closest shape, and then using the shader contained within that shape to get the color.
 
-100% tests passed, 0 tests failed out of 32
+ 
+What to turn in
 
-Total Test time (real) = 0.29 sec
-```
+You need to demonstrate to us that your code runs.  Commit your code and copy/paste your shader rayColor functions here. Make sure to upload the images you generated and post some to Discord for fun!
+
+Lambertian rayColor:
+
+color rayColor(const HitStructure &h) override {
+    vec3 normal = unit_vector(h.normal);
+    vec3 lightDir = unit_vector(light_pos - h.p);
+
+    float nDotl = std::max(0.0, dot(normal, lightDir));
+    vec3 lambertShade(nDotl, nDotl, nDotl);
+
+    return diffuse_color * lambertShade;
+}
+
+Blinn-Phong rayColor:
+
+color rayColor(const HitStructure &h) override {
+    vec3 normal = unit_vector(h.normal);
+    vec3 lightDir = unit_vector(light_pos - h.p);
+    vec3 viewDir = unit_vector(h.view_dir);
+
+    // diffuse
+    float nDotl = std::max(0.0, dot(normal, lightDir));
+    color lambertianComponent = diffuse_color * nDotl;
+
+    // specular
+    vec3 halfVector = unit_vector(lightDir + viewDir);
+
+    double spec = 0.0;
+    if (nDotl > 0.0) {
+        spec = std::pow(std::max(0.0, dot(normal, halfVector)), phongExp);
+    }
+
+    color specularComponent = specular_color * spec;
+
+    return lambertianComponent + specularComponent;
+}
+
+Images generated:
+- lambertian_sphere.png
+- blinn_phong_sphere.png
+- blinn_phong_9spheres.png
+
+Make sure we have access to your git repo so we can provide assistance and help you.  I would also encourage you to keep your README.md updated with the progress of your renderer.

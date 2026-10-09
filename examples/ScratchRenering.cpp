@@ -2,5 +2,6 @@
 #include "Framebuffer.cpp"
 
 int main() {
-    fb = Framebuffer.
+    Framebuffer fb(100, 100);
+
 }

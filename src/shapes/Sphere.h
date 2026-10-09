@@ -14,6 +14,10 @@ public:
         : Shape(center, vec3(0, 0, 0), col), radius(r) {}
     Sphere(const point3 &center, double r, const vec3 &rot, const color& col)
         : Shape(center, rot, col), radius(r) {}
+    Sphere(const point3 &center, double r, std::shared_ptr<Shader> s)
+        : Shape(center, vec3(0, 0, 0), color(0.8, 0.2, 0.2), s), radius(r) {}
+    Sphere(const point3 &center, double r, const color& col, std::shared_ptr<Shader> s)
+        : Shape(center, vec3(0, 0, 0), col, s), radius(r) {}
 
     const point3& center() const { return position; }
     point3& center() { return position; }

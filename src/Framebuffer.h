@@ -7,9 +7,11 @@
 
 // Pixel color representation (0 - 255 for RGB channels)
 struct ColorRGB {
-    uint8_t r{0};
+    uint8_t r{0};//what is uint8_t?
     uint8_t g{0};
     uint8_t b{0};
+
+    bool operator==(const ColorRGB&) const = default;
 };
 
 class Framebuffer {
@@ -28,8 +30,6 @@ public:
     // Buffer operations
     void clear(const ColorRGB& clear_color = {0, 0, 0});
     const uint8_t* raw_data() const; // Useful for passing to OpenGL or texture upload
-
-    // Exporting image
     bool write_ppm(const std::string& filepath) const;
     bool write_png(const std::string& filepath) const;
 
@@ -39,5 +39,5 @@ private:
     std::vector<ColorRGB> m_pixels; // Flat array: size = m_width * m_height
 
     // Helper to calculate 1D index from 2D coordinates: index = y * width + x
-    int get_index(int x, int y) const;
+    int get_index(int x, int y) const; //not using for learning
 };

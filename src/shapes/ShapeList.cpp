@@ -1,4 +1,5 @@
 #include "ShapeList.h"
+#include "Shader.h"
 #include <limits>
 
 bool ShapeList::intersect(const ray& r) const {
@@ -20,4 +21,16 @@ bool ShapeList::intersect(const ray& r, double t_min, double t_max, hit_record& 
     }
 
     return hit_anything;
+}
+
+color ShapeList::computeRayColor(const ray& r, const color& bg_color) const {
+    hit_record rec;
+    // find closest shape in front of ray origin
+    if (intersect(r, 0.001, std::numeric_limits<double>::infinity(), rec)) {
+        if (rec.shader) {
+            return rec.shader->rayColor(rec);
+        }
+        return rec.mat_color;
+    }
+    return bg_color;
 }

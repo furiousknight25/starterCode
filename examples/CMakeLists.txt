@@ -70,4 +70,17 @@ target_link_libraries(SceneRender PRIVATE
 	ZLIB::ZLIB
 )
 
+add_executable(
+  ShaderRender
+  ShaderRender.cpp
+)
+target_include_directories(ShaderRender PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(ShaderRender PRIVATE
+	cs4212-util
+	PNG::PNG
+	ZLIB::ZLIB
+)
+
 

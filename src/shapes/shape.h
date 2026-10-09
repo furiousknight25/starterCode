@@ -10,12 +10,16 @@ class Shape {
       vec3 position{0,0,0};
       vec3 rotation{0,0,0};
       color default_color{0.8, 0.8, 0.8};
+      std::shared_ptr<Shader> shader{nullptr}; // all shapes have a shader!
       
       Shape() = default; //what does default mean again?
-      Shape(const vec3 &pos, const vec3 &rot = vec3(0, 0, 0), const color& col = color(0.8, 0.8, 0.8))
-          : position(pos), rotation(rot), default_color(col) {}
+      Shape(const vec3 &pos, const vec3 &rot = vec3(0, 0, 0), const color& col = color(0.8, 0.8, 0.8), std::shared_ptr<Shader> sh = nullptr)
+          : position(pos), rotation(rot), default_color(col), shader(sh) {}
 
       virtual ~Shape() = default; //how does a virtual deconstructor work?
+
+      void set_shader(std::shared_ptr<Shader> s) { shader = s; }
+      std::shared_ptr<Shader> get_shader() const { return shader; }
 
       // Basic boolean intersection (from lab 1)
       virtual bool intersect(const ray &r) const = 0;

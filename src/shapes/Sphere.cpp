@@ -55,6 +55,7 @@ bool Sphere::intersect(const ray& r, double t_min, double t_max, hit_record& rec
     vec3 outward_normal = unit_vector(rec.p - position);
     rec.set_face_normal(r, outward_normal);
     rec.is_sphere = true;
+    rec.shader = shader; // give the hit record the sphere's shader
     if (use_normal_coloring) {
         rec.mat_color = 0.5 * (rec.normal + color(1.0, 1.0, 1.0));
     } else {

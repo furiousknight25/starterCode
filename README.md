@@ -34,3 +34,8 @@ cmake --build buildVCPkg --target SceneRender --- builds the multi-shape scene r
   - scene_multishape_200x200.png (normal visualization on spheres, flat colors on triangles)
   - triangle_render_200x200.png (flat-colored standalone triangle)
   - scene_aliased_1spp_200x200.png (1 sample per pixel comparison)
+
+## Shader Render (Lab - Lambertian and Blinn-Phong)
+
+cmake --build buildVCPkg --target ShaderRender --- builds the shader renderer
+./buildVCPkg/examples/ShaderRender --- renders lambertian and blinn-phong spheres
