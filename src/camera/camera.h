@@ -64,28 +64,6 @@ public:
         return *this;
     }
 
-    camera(camera&& other) noexcept
-        : aspect_ratio(other.aspect_ratio),
-          image_width(other.image_width),
-          image_height(other.image_height),
-          viewport_height(other.viewport_height),
-          viewport_width(other.viewport_width),
-          camera_center(other.camera_center),
-          rotation(other.rotation) {}
-
-    camera& operator=(camera&& other) noexcept {
-        if (this != &other) {
-            aspect_ratio = other.aspect_ratio;
-            image_width = other.image_width;
-            image_height = other.image_height;
-            viewport_height = other.viewport_height;
-            viewport_width = other.viewport_width;
-            camera_center = other.camera_center;
-            rotation = other.rotation;
-        }
-        return *this;
-    }
-
     virtual ~camera() = default;
 
     virtual void initialize() {}
@@ -108,9 +86,7 @@ public:
     }
     const vec3& get_rotation() const { return rotation; }
 
-    // Pure virtual method to generate a ray passing through pixel (i, j)
-    virtual ray generateRay(int i, int j) = 0;
+    // Virtual methods to generate a ray passing through pixel coordinates
     virtual ray generateRay(int i, int j) const = 0;
-    virtual ray generateRay(float u, float v) { return generateRay(int(u), int(v)); }
     virtual ray generateRay(float u, float v) const { return generateRay(int(u), int(v)); }
 };

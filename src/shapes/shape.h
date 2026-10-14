@@ -12,18 +12,18 @@ class Shape {
       color default_color{0.8, 0.8, 0.8};
       std::shared_ptr<Shader> shader{nullptr}; // all shapes have a shader!
       
-      Shape() = default; //what does default mean again?
+      Shape() = default; // Tells compiler to generate the default constructor
       Shape(const vec3 &pos, const vec3 &rot = vec3(0, 0, 0), const color& col = color(0.8, 0.8, 0.8), std::shared_ptr<Shader> sh = nullptr)
           : position(pos), rotation(rot), default_color(col), shader(sh) {}
 
-      virtual ~Shape() = default; //how does a virtual deconstructor work?
+      // Virtual destructor ensures derived class destructors are called when deleted via Shape pointer
+      virtual ~Shape() = default;
 
       void set_shader(std::shared_ptr<Shader> s) { shader = s; }
       std::shared_ptr<Shader> get_shader() const { return shader; }
 
-      // Basic boolean intersection (from lab 1)
+      // Basic boolean intersection (returns true if ray hits shape)
       virtual bool intersect(const ray &r) const = 0;
-      virtual bool intersect(const ray &r) { return const_cast<const Shape*>(this)->intersect(r); }
 
       // Range-bounded intersection with hit_record (for occlusion and shading)
       virtual bool intersect(const ray &r, double t_min, double t_max, hit_record &rec) const {

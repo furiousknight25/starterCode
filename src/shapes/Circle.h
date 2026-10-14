@@ -1,4 +1,4 @@
-#pragma once //hmm what does pragma mean again
+#pragma once // Prevents double-inclusion of this header file
 
 #include "Sphere.h"
 

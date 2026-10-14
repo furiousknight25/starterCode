@@ -69,31 +69,6 @@ public:
         return *this;
     }
 
-    perspective_camera(perspective_camera&& other) noexcept
-        : camera(std::move(other)),
-          focal_length(other.focal_length),
-          u(other.u), v(other.v), w(other.w),
-          viewport_u(other.viewport_u), viewport_v(other.viewport_v),
-          pixel_delta_u(other.pixel_delta_u), pixel_delta_v(other.pixel_delta_v),
-          pixel00_loc(other.pixel00_loc), pixel00_offset(other.pixel00_offset) {}
-
-    perspective_camera& operator=(perspective_camera&& other) noexcept {
-        if (this != &other) {
-            camera::operator=(std::move(other));
-            focal_length = other.focal_length;
-            u = other.u;
-            v = other.v;
-            w = other.w;
-            viewport_u = other.viewport_u;
-            viewport_v = other.viewport_v;
-            pixel_delta_u = other.pixel_delta_u;
-            pixel_delta_v = other.pixel_delta_v;
-            pixel00_loc = other.pixel00_loc;
-            pixel00_offset = other.pixel00_offset;
-        }
-        return *this;
-    }
-
     // Computes basis vectors u, v, w from Euler angles (pitch, yaw, roll in degrees)
     void update_basis_from_rotation() {
         constexpr float pi = 3.14159265358979323846f;
@@ -191,7 +166,6 @@ public:
         initialize_viewport();
     }
 
-    // Orient camera from a specified position towards target point
     void look_at(const point3& from, const point3& target, const vec3& vup = vec3(0, 1, 0)) {
         camera_center = from;
         set_lookat(target, vup);
@@ -205,24 +179,14 @@ public:
         return cam;
     }
 
-    ray generateRay(int i, int j) override {
-        vec3 ray_direction = pixel00_offset + (float(i) * pixel_delta_u) + (float(j) * pixel_delta_v);
+    // Ray generation: maps pixel coordinates to a ray in world space
+    ray generateRay(float u_pixel, float v_pixel) const override {
+        vec3 ray_direction = pixel00_offset + (u_pixel * pixel_delta_u) + (v_pixel * pixel_delta_v);
         return ray(camera_center, ray_direction);
     }
 
     ray generateRay(int i, int j) const override {
-        vec3 ray_direction = pixel00_offset + (float(i) * pixel_delta_u) + (float(j) * pixel_delta_v);
-        return ray(camera_center, ray_direction);
-    }
-
-    ray generateRay(float u_pixel, float v_pixel) override {
-        vec3 ray_direction = pixel00_offset + (u_pixel * pixel_delta_u) + (v_pixel * pixel_delta_v);
-        return ray(camera_center, ray_direction);
-    }
-
-    ray generateRay(float u_pixel, float v_pixel) const override {
-        vec3 ray_direction = pixel00_offset + (u_pixel * pixel_delta_u) + (v_pixel * pixel_delta_v);
-        return ray(camera_center, ray_direction);
+        return generateRay(float(i), float(j));
     }
 };
 

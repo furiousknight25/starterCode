@@ -46,11 +46,10 @@ public:
         vec3 normal = unit_vector(h.normal);
         vec3 lightDir = unit_vector(light_pos - h.p);
 
-        // if negative, surface is pointing away so don't light it
-        float nDotl = std::max(0.0, dot(normal, lightDir));
-        vec3 lambertShade(nDotl, nDotl, nDotl);
+        // Surface is only lit if normal points towards the light (dot > 0)
+        double nDotl = std::max(0.0, dot(normal, lightDir));
 
-        return diffuse_color * lambertShade;
+        return diffuse_color * nDotl;
     }
 };
 
@@ -71,11 +70,11 @@ public:
         vec3 lightDir = unit_vector(light_pos - h.p);
         vec3 viewDir = unit_vector(h.view_dir);
 
-        // diffuse part
-        float nDotl = std::max(0.0, dot(normal, lightDir));
-        color lambertianComponent = diffuse_color * nDotl;
+        // 1. Diffuse part (Lambertian)
+        double nDotl = std::max(0.0, dot(normal, lightDir));
+        color diffuseComponent = diffuse_color * nDotl;
 
-        // specular part with half vector (bisector of light and view)
+        // 2. Specular part using half-vector (bisector between light and view directions)
         vec3 halfVector = unit_vector(lightDir + viewDir);
 
         double spec = 0.0;
@@ -85,6 +84,6 @@ public:
 
         color specularComponent = specular_color * spec;
 
-        return lambertianComponent + specularComponent;
+        return diffuseComponent + specularComponent;
     }
 };

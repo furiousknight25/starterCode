@@ -9,8 +9,8 @@ class ray {
 
     ray(const point3& origin, const vec3& direction) : orig(origin), dir(direction) {}
 
-    const point3& origin() const  { return orig; } // so callers can now do ray.origin() to get a immutable reference, what makes it immutable, and what is the & syntax after point3& again?
-                                                   // first const and & makes it a reference and read only(better performance) and the second allows origin() to be called on const ray objects legally
+    // Returns a const reference to avoid copying while preventing modification
+    const point3& origin() const { return orig; }
     const vec3& direction() const { return dir; }
 
     point3 at(double t) const {

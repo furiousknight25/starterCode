@@ -25,9 +25,6 @@ public:
     void set_radius(double r) { radius = r; }
 
     bool intersect(const ray &r) const override;
-    bool intersect(const ray &r) override {
-        return static_cast<const Sphere*>(this)->intersect(r);
-    }
 
     bool intersect(const ray &r, double t_min, double t_max, hit_record &rec) const override;
     bool intersect(const ray &r, interval ray_t, hit_record &rec) const override {

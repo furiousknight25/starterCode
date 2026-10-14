@@ -95,3 +95,16 @@ target_link_libraries(ScratchRender PRIVATE
 	PNG::PNG
 	ZLIB::ZLIB
 )
+
+add_executable(
+  labshowcase
+  labshowcase.cpp
+)
+target_include_directories(labshowcase PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(labshowcase PRIVATE
+	cs4212-util
+	PNG::PNG
+	ZLIB::ZLIB
+)

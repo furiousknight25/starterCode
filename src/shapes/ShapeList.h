@@ -16,9 +16,6 @@ public:
     size_t size() const { return objects.size(); }
 
     bool intersect(const ray& r) const override;
-    bool intersect(const ray& r) override {
-        return static_cast<const ShapeList*>(this)->intersect(r);
-    }
 
     bool intersect(const ray& r, double t_min, double t_max, hit_record& rec) const override;
     bool intersect(const ray& r, interval ray_t, hit_record& rec) const override {
