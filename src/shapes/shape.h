@@ -11,16 +11,13 @@ class Shape {
       vec3 rotation{0,0,0};
       color default_color{0.8, 0.8, 0.8};
       std::shared_ptr<Shader> shader{nullptr}; // all shapes have a shader!
+      //btw, I dont htink i need a setter or getter because its public
       
       Shape() = default; // Tells compiler to generate the default constructor
       Shape(const vec3 &pos, const vec3 &rot = vec3(0, 0, 0), const color& col = color(0.8, 0.8, 0.8), std::shared_ptr<Shader> sh = nullptr)
           : position(pos), rotation(rot), default_color(col), shader(sh) {}
 
-      // Virtual destructor ensures derived class destructors are called when deleted via Shape pointer
-      virtual ~Shape() = default;
-
-      void set_shader(std::shared_ptr<Shader> s) { shader = s; }
-      std::shared_ptr<Shader> get_shader() const { return shader; }
+      virtual ~Shape() = default; //deconstruter
 
       // Basic boolean intersection (returns true if ray hits shape)
       virtual bool intersect(const ray &r) const = 0;

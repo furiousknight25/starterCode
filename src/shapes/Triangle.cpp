@@ -9,7 +9,7 @@ bool Triangle::intersect(const ray& r) const {
 
 bool Triangle::intersect(const ray& r, double t_min, double t_max, hit_record& rec) const {
     // Möller–Trumbore ray-triangle intersection algorithm
-    const double EPS = 1e-12;
+    const double EPS = 1e-6;
     vec3 edge1 = v1 - v0;
     vec3 edge2 = v2 - v0;
 
@@ -47,7 +47,7 @@ bool Triangle::intersect(const ray& r, double t_min, double t_max, hit_record& r
 
     rec.t = t;
     rec.p = r.at(t);
-    vec3 outward_normal = unit_vector(cross(edge1, edge2));
+    vec3 outward_normal = normalize(cross(edge1, edge2));
     rec.set_face_normal(r, outward_normal);
     rec.mat_color = default_color;
     rec.is_sphere = false;

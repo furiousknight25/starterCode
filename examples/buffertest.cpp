@@ -22,8 +22,8 @@ int main() {
         }
     }
 
-    const std::string output_filename = "output.ppm";
-    if (fb.write_ppm(output_filename)) {
+    const std::string output_filename = "output.png";
+    if (fb.write_png(output_filename)) {
         std::cout << "Successfully saved render to " << output_filename << std::endl;
     } else {
         std::cerr << "Failed to write image file!" << std::endl;

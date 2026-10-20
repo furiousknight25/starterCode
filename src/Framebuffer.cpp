@@ -1,5 +1,4 @@
 #include "Framebuffer.h"
-#include <fstream>
 #include <algorithm>
 #include "png++/png.hpp"
 
@@ -23,9 +22,9 @@ void Framebuffer::set_pixel(int x, int y, const ColorRGB& color) { //interesting
 
 void Framebuffer::set_pixel(int x, int y, const vec3& color) {
     // helper to clamp between 0.0 and 1.0 and convert to 0-255 byte
-    int r = static_cast<int>(255.999 * std::clamp(color.x(), 0.0, 1.0));
-    int g = static_cast<int>(255.999 * std::clamp(color.y(), 0.0, 1.0));
-    int b = static_cast<int>(255.999 * std::clamp(color.z(), 0.0, 1.0));
+    int r = static_cast<int>(255.999 * std::clamp(color.x(), 0.0f, 1.0f));
+    int g = static_cast<int>(255.999 * std::clamp(color.y(), 0.0f, 1.0f));
+    int b = static_cast<int>(255.999 * std::clamp(color.z(), 0.0f, 1.0f));
     set_pixel(x, y, ColorRGB(static_cast<uint8_t>(r), static_cast<uint8_t>(g), static_cast<uint8_t>(b)));
 }
 
@@ -39,26 +38,6 @@ void Framebuffer::clear(const ColorRGB& clear_color) { //default value already m
     }
 }
 
-bool Framebuffer::write_ppm(const std::string& filepath) const {
-    std::ofstream out(filepath);
-    if (!out.is_open()) {
-        return false;
-    }
-
-    out << "P3\n" << m_width << ' ' << m_height << "\n255\n";
-
-    for (int y = 0; y < m_height; ++y) {
-        for (int x = 0; x < m_width; ++x) {
-            ColorRGB pixel = get_pixel(x, y);
-            out << static_cast<int>(pixel.r) << ' '
-                << static_cast<int>(pixel.g) << ' '
-                << static_cast<int>(pixel.b) << '\n';
-        }
-    }
-
-    return true;
-}
-
 bool Framebuffer::write_png(const std::string& filepath) const { //std::string allocates this text onto the heap? but why? and the & makes it a reference, but why do that here? why not just send in a regular string
     png::image<png::rgb_pixel> image(m_width, m_height); //is this what makes the object?
     for (int y = 0; y <= m_height -1 ; y++) {
@@ -68,10 +47,8 @@ bool Framebuffer::write_png(const std::string& filepath) const { //std::string a
            }
     }
     try {
-    image.write(filepath);
-    return true;
+        image.write(filepath);
+        return true;
     }
-    catch(const std::exception& e) {return false;}//interesting syntax, I wonder how the exection of htis works
-    //exception& ? is this a reference to some kind of exception object??
-    
+    catch(const std::exception& e) { return false; }
 }

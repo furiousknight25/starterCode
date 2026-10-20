@@ -6,7 +6,7 @@
 #include "math/vec3.h"
 
 // Common floating-point tolerance threshold
-constexpr double EPSILON = 1.0e-5;
+constexpr double EPSILON = 1.0e-6;
 
 TEST_CASE("Construction - A ray stores the origin and direction passed to the constructor", "[ray][construction]") {
     point3 orig(1.5, -2.0, 3.25);
@@ -115,7 +115,7 @@ TEST_CASE("Immutability - ensure that you have no side effects that modify the r
 
 TEST_CASE("Numerical Robustness - Are points computed correct within floating-point tolerance", "[ray][robustness]") {
     point3 orig(1.0 / 3.0, 2.0 / 7.0, -5.0 / 11.0);
-    vec3 dir = unit_vector(vec3(1.0, 2.0, 3.0));
+    vec3 dir = normalize(vec3(1.0, 2.0, 3.0));
     ray r(orig, dir);
 
     SECTION("Euclidean distance along unit direction matches t parameter within tolerance") {

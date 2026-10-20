@@ -84,6 +84,12 @@ find_package(glfw3 CONFIG REQUIRED)
 # not using Vulkan at the moment
 # find_package(Vulkan)
 
+# ── Debug Visualizer (opt-in) ──
+option(DEBUG_VIS "Enable live debug visualization viewer" OFF)
+if(DEBUG_VIS)
+  add_subdirectory(tools/debugvis)
+endif()
+
 # Add the src directory to build the library.
 add_subdirectory(src)
 

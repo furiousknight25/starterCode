@@ -17,7 +17,7 @@ public:
         : Shape((p0 + p1 + p2) / 3.0, vec3(0, 0, 0), color(0.8, 0.8, 0.8), sh), v0(p0), v1(p1), v2(p2) {}
 
     vec3 normal() const {
-        return unit_vector(cross(v1 - v0, v2 - v0));
+        return normalize(cross(v1 - v0, v2 - v0));
     }
 
     point3 vertex(int i) const {

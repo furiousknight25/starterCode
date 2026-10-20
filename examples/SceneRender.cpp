@@ -67,13 +67,13 @@ void render_image(const std::string& filename, const ShapeList& world,
                 float u_offset = (samples_per_pixel > 1) ? static_cast<float>(random_double() - 0.5) : 0.0f;
                 float v_offset = (samples_per_pixel > 1) ? static_cast<float>(random_double() - 0.5) : 0.0f;
 
-                ray r = cam.generateRay(static_cast<float>(i) + u_offset, static_cast<float>(j) + v_offset);
+                ray r = cam.shoot_ray(static_cast<float>(i) + u_offset, static_cast<float>(j) + v_offset);
 
                 hit_record rec;
                 if (world.intersect(r, 0.001, 1000.0, rec)) {
                     if (rec.is_sphere) {
                         // Normal visualization on spheres: map [-1, 1] normal to [0, 1] RGB
-                        vec3 n = unit_vector(rec.normal);
+                        vec3 n = normalize(rec.normal);
                         pixel_color += 0.5 * (n + color(1.0, 1.0, 1.0));
                     } else {
                         // Flat colors on triangles

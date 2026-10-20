@@ -19,7 +19,7 @@ void render_scene(const std::string& filename, const Scene& scene, int width, in
 
     for (int y = 0; y < fb.height(); ++y) {
         for (int x = 0; x < fb.width(); ++x) {
-            ray r = cam.generateRay(x, y);
+            ray r = cam.shoot_ray(x, y);
             color pixel_color = scene.computeRayColor(r, color(0.1, 0.1, 0.15));
             fb.set_pixel(x, y, pixel_color);
         }

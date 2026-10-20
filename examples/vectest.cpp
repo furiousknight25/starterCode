@@ -1,45 +1,41 @@
 #include "Framebuffer.h"
-#include "camera/perspective_camera.h"
+#include "camera/PerspectiveCamera.h"
 #include "math/ray.h"
 #include "math/vec3.h"
 
 #include <iostream>
 
-// Maps ray unit direction [-1.0, 1.0] to RGB color channels [0.0, 1.0]
-color ray_color(const ray& r) {
-    vec3 unitvec = unit_vector(r.direction());
-    return 0.5 * (unitvec + color(1.0, 1.0, 1.0));
-}
+#ifdef DEBUGVIS_ENABLED
+  #include "DebugFramebuffer.h"
+  using FB = DebugFramebuffer;
+#else
+  using FB = Framebuffer;
+#endif
+
+  color ray_color(const ray &r)
+  {// color is 0.0-1.0
+    vec3 dir = normalize(r.direction());
+
+    dir = (dir + vec3(1.0, 1.0, 1.0)) * .5;// mapped to color space? ALSO dont redeclare things, so no need to "type cast it"
+    return dir;
+  }
 
 int main() {
-    // Image and Camera setup
-    auto aspect_ratio = 1.0;
-    int image_width = 200;
-    float focal_length = 0.5;
+    FB fb(100,100);
+    PerspectiveCamera cam(100, 100, 1.1);
 
-    // Create camera with a new position and rotation
-    // Position: camera elevated at (0, 1, 0)
-    // Rotation: pitch = 15 deg (looking slightly up), yaw = 30 deg (turned right), roll = 45 deg (tilted 45 deg)
-    // The rotation angles change the direction vectors of the raycasts, producing a dynamic diagonal gradient
-    point3 camera_position(1.0, 3.0, 6.0);
-    vec3 camera_rotation(-2.0, -1.5, -4.0);
+    for (int y = 0; y < fb.height(); y++) {
 
-    perspective_camera cam(image_width, aspect_ratio, camera_position, camera_rotation, focal_length);
-    Framebuffer fb(cam.image_width, cam.image_height);
-
-    std::cout << "Rendering scene with camera position: " << cam.camera_center << "\n";
-    std::cout << "Camera rotation (pitch, yaw, roll in deg): " << cam.rotation << "\n";
-
-    // Render
-    for (int j = 0; j < cam.image_height; j++) {
-        std::clog << "\rScanlines remaining: " << (cam.image_height - j) << ' ' << std::flush;
-        for (int i = 0; i < cam.image_width; i++) {
-            ray r = cam.generateRay(i, j);
-            color pixel_color = ray_color(r);
-            fb.set_pixel(i, j, pixel_color);
-        }
+      for (int x = 0; x < fb.width(); x++) {
+        ray r = cam.shoot_ray(x,y);
+        fb.set_pixel(x,y, ray_color(r));
+      }
     }
-
-    fb.write_png("output.png");
-    std::clog << "\rDone rendering to output.png.       \n";
+    
+    std::cout << cam.focal_length;
+    fb.write_png("vectestnewworld.png");
 }
+
+//trying this?
+// cmake --build buildVCPkg --target vectest
+//  ./buildVCPkg/examples/vectest 

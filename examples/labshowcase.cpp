@@ -98,8 +98,7 @@ int main() {
     const point3 camera_pos(0.0, 3.0, 3.0);
     const vec3 view_dir(0.0, -0.4, -1.0);
 
-    perspective_camera cam(width, height, focal_length, viewport_height, camera_pos);
-    cam.set_lookat(camera_pos + view_dir);
+    perspective_camera cam(width, height, focal_length, viewport_height, camera_pos, vec3(-21.8014f, 0.0f, 0.0f));
 
     ShapeList scene = build_test_scene();
     Framebuffer fb(width, height);
@@ -125,7 +124,7 @@ int main() {
                     float u_offset = (static_cast<float>(gx) + static_cast<float>(random_double())) / grid_size - 0.5f;
                     float v_offset = (static_cast<float>(gy) + static_cast<float>(random_double())) / grid_size - 0.5f;
 
-                    ray r = cam.generateRay(static_cast<float>(i) + u_offset, static_cast<float>(j) + v_offset);
+                    ray r = cam.shoot_ray(static_cast<float>(i) + u_offset, static_cast<float>(j) + v_offset);
                     pixel_color += scene.computeRayColor(r, bg_color);
                 }
             }

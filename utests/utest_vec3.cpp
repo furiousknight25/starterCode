@@ -101,9 +101,9 @@ TEST_CASE("Vector length and normalization", "[vec3][normalization]") {
         REQUIRE_THAT(v.length(), Catch::Matchers::WithinAbs(5.0, EPSILON));
     }
 
-    SECTION("unit_vector produces unit length vector") {
+    SECTION("normalize produces unit length vector") {
         vec3 v(12.5, -3.2, 44.1);
-        vec3 norm = unit_vector(v);
+        vec3 norm = normalize(v);
 
         REQUIRE_THAT(norm.length(), Catch::Matchers::WithinAbs(1.0, EPSILON));
     }

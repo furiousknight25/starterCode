@@ -27,7 +27,7 @@ public:
 class NormalShader : public Shader {
 public:
     color rayColor(const HitStructure &h) override {
-        vec3 n = unit_vector(h.normal);
+        vec3 n = normalize(h.normal);
         return 0.5 * (n + color(1.0, 1.0, 1.0));
     }
 };
@@ -43,11 +43,10 @@ public:
         : diffuse_color(c), light_pos(lpos) {}
 
     color rayColor(const HitStructure &h) override {
-        vec3 normal = unit_vector(h.normal);
-        vec3 lightDir = unit_vector(light_pos - h.p);
+        vec3 normal = normalize(h.normal);
+        vec3 lightDir = normalize(light_pos - h.p);
 
-        // Surface is only lit if normal points towards the light (dot > 0)
-        double nDotl = std::max(0.0, dot(normal, lightDir));
+        double nDotl = std::max(0.0f, dot(normal, lightDir));
 
         return diffuse_color * nDotl;
     }
@@ -66,20 +65,20 @@ public:
         : diffuse_color(c), specular_color(spec), phongExp(exp), light_pos(lpos) {}
 
     color rayColor(const HitStructure &h) override {
-        vec3 normal = unit_vector(h.normal);
-        vec3 lightDir = unit_vector(light_pos - h.p);
-        vec3 viewDir = unit_vector(h.view_dir);
+        vec3 normal = normalize(h.normal);
+        vec3 lightDir = normalize(light_pos - h.p);
+        vec3 viewDir = normalize(h.view_dir);
 
         // 1. Diffuse part (Lambertian)
-        double nDotl = std::max(0.0, dot(normal, lightDir));
+        double nDotl = std::max(0.0f, dot(normal, lightDir));
         color diffuseComponent = diffuse_color * nDotl;
 
         // 2. Specular part using half-vector (bisector between light and view directions)
-        vec3 halfVector = unit_vector(lightDir + viewDir);
+        vec3 halfVector = normalize(lightDir + viewDir);
 
         double spec = 0.0;
         if (nDotl > 0.0) {
-            spec = std::pow(std::max(0.0, dot(normal, halfVector)), phongExp);
+            spec = std::pow(std::max(0.0f, dot(normal, halfVector)), phongExp);
         }
 
         color specularComponent = specular_color * spec;

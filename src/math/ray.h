@@ -13,7 +13,7 @@ class ray {
     const point3& origin() const { return orig; }
     const vec3& direction() const { return dir; }
 
-    point3 at(double t) const {
+    point3 at(double t) const { //return the point based on how far you are with t
         return orig + t*dir;
     }
 

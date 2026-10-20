@@ -108,3 +108,17 @@ target_link_libraries(labshowcase PRIVATE
 	PNG::PNG
 	ZLIB::ZLIB
 )
+
+# ── Debug Visualizer: automatically link to all example targets ──
+if(DEBUG_VIS)
+  # Demo program that showcases the debug visualizer
+  add_executable(debugvis_demo debugvis_demo.cpp)
+  target_include_directories(debugvis_demo PRIVATE ${CMAKE_SOURCE_DIR}/src)
+  target_link_libraries(debugvis_demo PRIVATE cs4212-util PNG::PNG ZLIB::ZLIB)
+
+  foreach(tgt vectest SphereRender SceneRender ShaderRender ScratchRender labshowcase buffertest debugvis_demo)
+    if(TARGET ${tgt})
+      target_link_libraries(${tgt} PRIVATE debugvis)
+    endif()
+  endforeach()
+endif()

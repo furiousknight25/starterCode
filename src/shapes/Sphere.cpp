@@ -1,28 +1,15 @@
 #include "Sphere.h"
 #include <cmath>
 
-bool Sphere::intersect(const ray& r) const {
-    vec3 oc = r.origin() - position;
-    double a = dot(r.direction(), r.direction());
-    if (a <= 1e-12) {
-        return false;
-    }
-    double b = 2.0 * dot(r.direction(), oc);
-    double c = dot(oc, oc) - (radius * radius);
-    double discriminant = b * b - 4.0 * a * c;
+bool Sphere::intersect(const ray& r) const { 
+    //ax^2 + bx + c = 0
+    float a = dot(r.direction(), r.direction());
+    float b = dot((-2 * r.direction()), (position - r.origin()));
+    float c = dot((position - r.origin()), position - r.origin()) - pow(radius,2);
 
-    if (discriminant < 0.0) {
-        return false;
-    }
-
-    // A ray travels forward along its direction (t >= 0).
-    // The roots of a * t^2 + b * t + c = 0 are:
-    // t = (-b +/- sqrt(discriminant)) / (2 * a)
-    // Since a > 0, the larger root is (-b + sqrt(discriminant)) / (2 * a).
-    // If the largest root is negative, the entire sphere is strictly behind the ray origin.
-    double sqrt_d = std::sqrt(discriminant);
-    double t_max = (-b + sqrt_d) / (2.0 * a);
-    return (t_max >= 0.0);
+    //quadratic equation verification
+    float discrim = b*b - 4*a*c; //all ya need is this :)
+    return (discrim >= 0);
 }
 
 bool Sphere::intersect(const ray& r, double t_min, double t_max, hit_record& rec) const {
@@ -52,7 +39,7 @@ bool Sphere::intersect(const ray& r, double t_min, double t_max, hit_record& rec
 
     rec.t = root;
     rec.p = r.at(rec.t);
-    vec3 outward_normal = unit_vector(rec.p - position);
+    vec3 outward_normal = normalize(rec.p - position);
     rec.set_face_normal(r, outward_normal);
     rec.is_sphere = true;
     rec.shader = shader; // give the hit record the sphere's shader

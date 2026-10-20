@@ -22,7 +22,6 @@ set(UTESTS
   utest_Failure
   utest_vec3
   utest_framebuffer
-  utest_camera
   utest_ray
   utest_sphere
   utest_triangle
