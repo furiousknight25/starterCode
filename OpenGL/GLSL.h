@@ -40,10 +40,8 @@
 
 #include <GL/glew.h>
 
-namespace sivelab
-{
-  class GLSLObject {
-  public:
+class GLSLObject {
+public:
     enum ShaderType {
       VERTEX_SHADER,
       FRAGMENT_SHADER,
@@ -108,6 +106,5 @@ namespace sivelab
     bool f_stripComments( char* buf );
     void glErrorCheck( const char* msg );
   };
-}
 
 #endif // __GLSL_CLASS_H__

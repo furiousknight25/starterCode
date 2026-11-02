@@ -8,8 +8,8 @@ class vec3 {
 	public:
 		float e[3];
 
-		vec3() : e{0,0,0} {} // Member initializer list sets all 3 components to 0
-		vec3(float e0, float e1, float e2) : e{e0,e1,e2} {}
+		constexpr vec3() : e{0,0,0} {} // Member initializer list sets all 3 components to 0
+		constexpr vec3(float e0, float e1, float e2) : e{e0,e1,e2} {}
 
 		float x() const { return e[0]; }
 		float y() const { return e[1]; }
@@ -44,10 +44,11 @@ class vec3 {
 		float length_squared() const {
 			return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
 		}
+
+		static const vec3 ONE;
 };
 
-// point3 and color are aliases for vec3 (geometric clarity)
-using point3 = vec3;
+// color is an alias for vec3 (geometric clarity)
 using color = vec3;
 
 // Vector Utility Functions (inline prevents duplicate symbol linker errors)
@@ -95,5 +96,7 @@ inline vec3 cross(const vec3& u, const vec3& v) {
 inline vec3 normalize(const vec3& v) {
 	return v / v.length();
 }
+
+inline constexpr vec3 vec3::ONE{1.0f,1.0f,1.0f};
 
 #endif

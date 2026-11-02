@@ -73,7 +73,7 @@ public:
 
     // Log hit info for a specific pixel
     void debug_hit(int px, int py, double t,
-                   const vec3& normal, const point3& hit_point) {
+                   const vec3& normal, const vec3& hit_point) {
         DebugVisualizer::instance().hit_info(
             px, py, static_cast<float>(t),
             static_cast<float>(normal.x()),

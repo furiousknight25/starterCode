@@ -50,4 +50,3 @@ public:
     }
 };
 
-using perspective_camera = PerspectiveCamera;

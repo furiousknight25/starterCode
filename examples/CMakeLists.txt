@@ -6,33 +6,6 @@
 #
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-add_executable(test_pngWrite
-  test_pngWrite.cpp
-)
-target_link_libraries(test_pngWrite cs4212-util)
-target_link_libraries(test_pngWrite ${Boost_PROGRAM_OPTIONS_LIBRARIES})
-target_link_libraries(test_pngWrite PNG::PNG)
-target_link_libraries(test_pngWrite ZLIB::ZLIB)
-
-add_executable(test_readPNGFile
-  test_readPNGFile.cpp
-)
-target_link_libraries(test_readPNGFile cs4212-util)
-target_link_libraries(test_readPNGFile ${Boost_PROGRAM_OPTIONS_LIBRARIES})
-target_link_libraries(test_readPNGFile PNG::PNG)
-target_link_libraries(test_readPNGFile ZLIB::ZLIB)
-
-add_executable(
-  buffertest
-  buffertest.cpp
-  )
-target_include_directories(buffertest PRIVATE
-	${CMAKE_SOURCE_DIR}/src
-)
-target_link_libraries(buffertest PRIVATE
-	cs4212-util
-)
-
 add_executable(
   vectest
   vectest.cpp
@@ -70,40 +43,28 @@ target_link_libraries(SceneRender PRIVATE
 	ZLIB::ZLIB
 )
 
-add_executable(
-  ShaderRender
-  ShaderRender.cpp
-)
-target_include_directories(ShaderRender PRIVATE
-	${CMAKE_SOURCE_DIR}/src
-)
-target_link_libraries(ShaderRender PRIVATE
-	cs4212-util
-	PNG::PNG
-	ZLIB::ZLIB
-)
+# ShaderRender (uncomment when filled out)
+# add_executable(
+#   ShaderRender
+#   ShaderRender.cpp
+# )
+# target_include_directories(ShaderRender PRIVATE
+# 	${CMAKE_SOURCE_DIR}/src
+# )
+# target_link_libraries(ShaderRender PRIVATE
+# 	cs4212-util
+# 	PNG::PNG
+# 	ZLIB::ZLIB
+# )
 
 add_executable(
   ScratchRender
   ScratchRender.cpp
-)
+  )
 target_include_directories(ScratchRender PRIVATE
 	${CMAKE_SOURCE_DIR}/src
 )
 target_link_libraries(ScratchRender PRIVATE
-	cs4212-util
-	PNG::PNG
-	ZLIB::ZLIB
-)
-
-add_executable(
-  labshowcase
-  labshowcase.cpp
-)
-target_include_directories(labshowcase PRIVATE
-	${CMAKE_SOURCE_DIR}/src
-)
-target_link_libraries(labshowcase PRIVATE
 	cs4212-util
 	PNG::PNG
 	ZLIB::ZLIB
@@ -116,7 +77,7 @@ if(DEBUG_VIS)
   target_include_directories(debugvis_demo PRIVATE ${CMAKE_SOURCE_DIR}/src)
   target_link_libraries(debugvis_demo PRIVATE cs4212-util PNG::PNG ZLIB::ZLIB)
 
-  foreach(tgt vectest SphereRender SceneRender ShaderRender ScratchRender labshowcase buffertest debugvis_demo)
+  foreach(tgt vectest SphereRender SceneRender ShaderRender ScratchRender debugvis_demo)
     if(TARGET ${tgt})
       target_link_libraries(${tgt} PRIVATE debugvis)
     endif()

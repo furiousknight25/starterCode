@@ -8,9 +8,9 @@
 constexpr double EPSILON = 1e-5;
 
 TEST_CASE("Triangle Construction and Normal Calculation", "[triangle][geometry]") {
-    point3 v0(0.0, 0.0, 0.0);
-    point3 v1(2.0, 0.0, 0.0);
-    point3 v2(0.0, 3.0, 0.0);
+    vec3 v0(0.0, 0.0, 0.0);
+    vec3 v1(2.0, 0.0, 0.0);
+    vec3 v2(0.0, 3.0, 0.0);
     Triangle tri(v0, v1, v2);
 
     SECTION("Vertices match inputs") {
@@ -28,13 +28,13 @@ TEST_CASE("Triangle Construction and Normal Calculation", "[triangle][geometry]"
 }
 
 TEST_CASE("Ray-Triangle Intersection - Piercing Hit", "[triangle][intersection][hit]") {
-    point3 v0(0.0, 0.0, 0.0);
-    point3 v1(2.0, 0.0, 0.0);
-    point3 v2(0.0, 2.0, 0.0);
+    vec3 v0(0.0, 0.0, 0.0);
+    vec3 v1(2.0, 0.0, 0.0);
+    vec3 v2(0.0, 2.0, 0.0);
     Triangle tri(v0, v1, v2);
 
     SECTION("Ray passing through interior of triangle hits") {
-        ray r(point3(0.5, 0.5, 5.0), vec3(0.0, 0.0, -1.0));
+        ray r(vec3(0.5, 0.5, 5.0), vec3(0.0, 0.0, -1.0));
         hit_record rec;
 
         REQUIRE(tri.intersect(r) == true);
@@ -48,7 +48,7 @@ TEST_CASE("Ray-Triangle Intersection - Piercing Hit", "[triangle][intersection][
     }
 
     SECTION("Ray hitting from backface registers hit with opposite face normal") {
-        ray r(point3(0.5, 0.5, -5.0), vec3(0.0, 0.0, 1.0));
+        ray r(vec3(0.5, 0.5, -5.0), vec3(0.0, 0.0, 1.0));
         hit_record rec;
 
         REQUIRE(tri.intersect(r, 0.001, 100.0, rec) == true);
@@ -59,35 +59,35 @@ TEST_CASE("Ray-Triangle Intersection - Piercing Hit", "[triangle][intersection][
 }
 
 TEST_CASE("Ray-Triangle Intersection - Misses Outside Boundaries", "[triangle][intersection][miss]") {
-    point3 v0(0.0, 0.0, 0.0);
-    point3 v1(2.0, 0.0, 0.0);
-    point3 v2(0.0, 2.0, 0.0);
+    vec3 v0(0.0, 0.0, 0.0);
+    vec3 v1(2.0, 0.0, 0.0);
+    vec3 v2(0.0, 2.0, 0.0);
     Triangle tri(v0, v1, v2);
 
     SECTION("Ray past hypotenuse (u + v > 1) misses") {
-        ray r(point3(1.5, 1.5, 5.0), vec3(0.0, 0.0, -1.0));
+        ray r(vec3(1.5, 1.5, 5.0), vec3(0.0, 0.0, -1.0));
         hit_record rec;
         REQUIRE(tri.intersect(r) == false);
         REQUIRE(tri.intersect(r, 0.001, 100.0, rec) == false);
     }
 
     SECTION("Ray with negative u misses") {
-        ray r(point3(-0.5, 0.5, 5.0), vec3(0.0, 0.0, -1.0));
+        ray r(vec3(-0.5, 0.5, 5.0), vec3(0.0, 0.0, -1.0));
         REQUIRE(tri.intersect(r) == false);
     }
 
     SECTION("Ray with negative v misses") {
-        ray r(point3(0.5, -0.5, 5.0), vec3(0.0, 0.0, -1.0));
+        ray r(vec3(0.5, -0.5, 5.0), vec3(0.0, 0.0, -1.0));
         REQUIRE(tri.intersect(r) == false);
     }
 
     SECTION("Ray parallel to triangle plane misses") {
-        ray r(point3(0.5, 0.5, 1.0), vec3(1.0, 0.0, 0.0));
+        ray r(vec3(0.5, 0.5, 1.0), vec3(1.0, 0.0, 0.0));
         REQUIRE(tri.intersect(r) == false);
     }
 
     SECTION("Ray pointing away from triangle misses (t < 0)") {
-        ray r(point3(0.5, 0.5, 5.0), vec3(0.0, 0.0, 1.0));
+        ray r(vec3(0.5, 0.5, 5.0), vec3(0.0, 0.0, 1.0));
         REQUIRE(tri.intersect(r) == false);
     }
 }

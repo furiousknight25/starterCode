@@ -1,34 +1,57 @@
 #pragma once
 
 #include "shape.h"
+#include "shaders/Light.h"
 #include <vector>
 #include <memory>
+
+//I only want a header, I will assume that there only ever will be one shapelist at a time if a shapelist does exist
 
 class ShapeList : public Shape {
 public:
     std::vector<std::shared_ptr<Shape>> objects;
+    std::vector<Light> lights;
 
     ShapeList() = default;
     ShapeList(std::shared_ptr<Shape> object) { add(object); }
 
     void clear() { objects.clear(); }
     void add(std::shared_ptr<Shape> object) { objects.push_back(object); }
-    size_t size() const { return objects.size(); }
+    void add_light(const Light& light) {lights.push_back(light);} // how do you have a const reference?
 
-    bool intersect(const ray& r) const override;
+    bool intersect(const ray& r)const override { //basic multi, hard code buffer
+        hit_record temp_rec;
+        bool hit_anything = false;
 
-    bool intersect(const ray& r, double t_min, double t_max, hit_record& rec) const override;
+        for (const auto& object : objects) {
+            if (object ->intersect(r)) {
+                hit_anything = true;
+            }
+        }
+        
+        return hit_anything;
+    }
+
+    bool intersect(const ray& r, double t_min, double t_max, hit_record& rec) const override {
+        hit_record temp_rec;
+        bool hit_anything = false;
+        auto closest_so_far = t_max; //closest t value?
+
+        for (const auto& object : objects) {
+            if (object ->intersect(r, t_min, closest_so_far, temp_rec)) {
+                hit_anything = true;
+                closest_so_far = temp_rec.t;
+                temp_rec.lights = &lights; //this is a copy of the single pointer
+                rec = temp_rec;
+            }
+        }
+        
+        return hit_anything;
+    }
     bool intersect(const ray& r, interval ray_t, hit_record& rec) const override {
         return intersect(r, ray_t.min, ray_t.max, rec);
     }
 
-    // Point Light in the Scene (default from lab instructions: (0, 10, 5))
-    point3 light_pos{0.0, 10.0, 5.0};
-    const point3& get_light_position() const { return light_pos; }
-    void set_light_position(const point3& p) { light_pos = p; }
-
-    // Compute ray color for closest shape, using its shader
-    color computeRayColor(const ray& r, const color& bg_color = color(0.2, 0.2, 0.2)) const;
 };
 
 using Scene = ShapeList;

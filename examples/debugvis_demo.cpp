@@ -29,7 +29,7 @@
 #include <iostream>
 
 // Simple sphere intersection for demo purposes
-bool hit_sphere(const point3& center, double radius, const ray& r,
+bool hit_sphere(const vec3& center, double radius, const ray& r,
                 double& t_out, vec3& normal_out) {
     vec3 oc = r.origin() - center;
     double a = dot(r.direction(), r.direction());
@@ -39,7 +39,7 @@ bool hit_sphere(const point3& center, double radius, const ray& r,
     if (discriminant < 0) return false;
     t_out = (-b - std::sqrt(discriminant)) / (2.0 * a);
     if (t_out < 0) return false;
-    point3 hit_p = r.at(t_out);
+    vec3 hit_p = r.at(t_out);
     normal_out = normalize(hit_p - center);
     return true;
 }
@@ -49,13 +49,13 @@ int main() {
     FB fb(W, H);
 
     // Camera setup
-    point3 cam_origin(0, 0, 0);
+    vec3 cam_origin(0, 0, 0);
     double focal_length = 1.0;
     double viewport_h = 2.0;
     double viewport_w = viewport_h * (double(W) / H);
 
     // Sphere
-    point3 sphere_center(0, 0, -3);
+    vec3 sphere_center(0, 0, -3);
     double sphere_radius = 1.0;
 
     std::cout << "Rendering " << W << "x" << H << " with debug vis..." << std::endl;

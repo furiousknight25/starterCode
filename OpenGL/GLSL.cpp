@@ -16,9 +16,7 @@
 //
 // ////////////////////////////////////////////////////////////////////////////////
 
-namespace sivelab
-{
-    GLSLObject::GLSLObject()
+GLSLObject::GLSLObject()
     {
         // no extra output
         m_verbose_level = 0;
@@ -372,5 +370,5 @@ namespace sivelab
 #endif
 #endif
     }
-}
+
 
