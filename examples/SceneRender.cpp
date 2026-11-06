@@ -9,6 +9,7 @@
 #include "shaders/Light.h"
 #include "shaders/BlinnPhong.h"
 #include "shaders/MirrorShader.h"
+#include "shapes/Triangle.h"
 
 #include <iostream>
 #include <memory>
@@ -56,6 +57,7 @@ int main() {
     scene.add(std::make_shared<Sphere>(vec3(-7,5,-12), 2.0f, mirror_shader));
     scene.add(std::make_shared<Sphere>(vec3(-10,8,-12), 2.0f, mirror_shader));
 
+    scene.add(std::make_shared<Triangle>(vec3::ZERO, vec3::ZERO, std::vector<vec3>{vec3(0,3,-7), vec3(2,0,-7), vec3(3,3,-8)}, normal_shader));
     cam.render(scene, fb);
     
     fb.write_png("double_scene.png");

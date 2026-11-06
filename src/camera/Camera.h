@@ -17,7 +17,7 @@ public:
     float vp_width = 2.0f;
     float vp_height = 2.0f;
 
-    int image_width = 100;
+    int image_width = 100; //alright I GUESS it gets defined here, framebuffer pulls, kinda weird though lol
     int image_height = 100;
     int samples_per_pixel = 1; // Anti-aliasing samples per pixel
 

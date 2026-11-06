@@ -1,0 +1,99 @@
+
+Shaders:
+auto lambertianShader = std::make_shared<Lambertian>();
+auto blinnPhongShader = std::make_shared<BlinnPhong>();
+blinnPhongShader->setEyePosition(cam.getPosition());
+auto mirrorShader = std::make_shared<MirrorShader>();
+auto diffuseGroundShader = std::make_shared<DiffuseShader>(vec3(0.8, 0.8, 0.8));
+auto diffuse_redShader = std::make_shared<DiffuseShader>(vec3(1.0, 0.0, 0.0));
+
+Lights (carried over from the example on the cheatsheet, which is probably why the cyan sphere has an odd looking shadow on it):
+lights.push_back(std::make_shared<PointLight>(vec3(3, 5, 2), vec3(1.0, 1.0, 1.0)));
+lights.push_back(std::make_shared<PointLight>(vec3(-3, 5, 2), vec3(1.0, 1.0, 1.0))); 
+
+Ground shape:
+shapes.push_back(std::make_shared<Triangle>( 
+  vec3(0, 0, 5), vec3(200, 0, -200), vec3(-200, 0, -200), vec3(0.8, 0.8, 0.8), diffuseGroundShader));
+
+Mirror Sphere:
+vec3 center(0.0f, 1.0f, -4.0f);
+shapes.push_back(std::make_shared<Sphere>(center, 1.2f, vec3(0.9, 0.9, 0.9), mirrorShader));
+
+
+{
+    "scene": {
+	"camera": [{
+	    "position": "0 4.0 2.0",
+	    "viewDir": "0.0 -2.0 -3.0",
+	    "focalLength": 0.4,
+	    "imagePlaneWidth": 0.6,
+	    "_name": "main",
+	    "_type": "perspective"
+	}],
+
+	"light": [
+	    {
+		"_type": "shape",
+		"intensity": "20.0 20.0 20.0",
+	    
+		"shape" : {
+		    "shader": {
+			"_ref": "whiteLight"
+		    },
+		    "center": "0.0 30.0 -10.0",
+		    "radius": 5.0,
+		    "_name": "lightEmitter",
+		    "_type": "sphere"
+		}
+	    }
+	],
+
+	"shader": [
+	    {
+		"diffuse": "0.5 0.5 0.5",
+		"_name": "greyMat",
+		"_type": "Diffuse"
+	    },
+	    {
+		"diffuse": "0.0 0.75 0.0",
+		"_name": "green",
+		"_type": "Diffuse"
+	    },
+	    {
+		"_name": "mirror",
+		"_type": "Mirror"
+	    }
+	],
+	"shape": [
+	    {
+		"shader": {
+		    "_ref": "greyMat"
+		},
+		"v0": "-200.0 0.0 50.0",
+		"v1": "200.0 0.0 50.0",
+		"v2": "0.0 0.0 -1000.0",
+		"_name": "ground",
+		"_type": "triangle"
+	    },
+	    {
+		"shader": {
+		    "_ref": "green"
+		},
+		"center": "3.0 6.0 -10.0",
+		"radius": 5,
+		"_name": "s1",
+		"_type": "sphere"
+	    },
+	    {
+		"shader": {
+		    "_ref": "mirror"
+		},
+		"center": "-9.0 6.0 -14.0",
+		"radius": 5,
+		"_name": "s2",
+		"_type": "sphere"
+	    }
+	],
+	"_bgColor": "0.0 0.0 0.0"
+    }
+}

@@ -1,0 +1,105 @@
+{
+    "scene": {
+	"camera": [{
+	    "position": "0 0.0 0.0",
+	    "viewDir": "0 0.0 -1.0",
+	    "focalLength": 1.0,
+	    "imagePlaneWidth": 0.5,
+	    "_name": "main",
+	    "_type": "perspective"
+	}],
+	"light": [
+	    {
+		"position": "-10.0 2.0 1.0",
+		"intensity": "0.2 0.2 0.2",
+		"_type": "point"
+	    },
+	    {
+		"position": "5.0 4.0 -2.0",
+		"intensity": "1.51 1.0 1.51",
+		"_type": "point"
+	    },
+        {
+		"position": "0.0 4.0 -16.0",
+		"intensity": "1.0 1.0 1.51",
+		"_type": "point"
+	    }
+	],
+	"shader": [
+
+	    {
+		"diffuse": "0.3 0.8 0.65",
+		"_name": "cyanish",
+		"_type": "Lambertian"
+	    },
+	    {
+		"_name": "normal",
+		"_type": "Normal"
+	    },
+	    {
+		"_name": "floor",
+		"diffuse": "0.3 0.1 0.0",
+		"_type": "Lambertian"
+	    },
+	    {
+		"diffuse": "0.3 0.8 0.65",
+		"_name": "blinnred",
+		"phongExp": 50.0,
+		"_type": "BlinnPhong"
+	    },
+	    {
+		"_name": "mirror",
+		"_type": "Mirror"
+	    }
+	],
+	"shape": [
+	    {
+		"shader": {
+		    "_ref": "cyanish"
+		},
+		"center": "3 0.0 -6.0",
+		"radius": 1.0,
+		"_name": "cyanSphere",
+		"_type": "sphere"
+    },
+	    {
+		"shader": {
+		    "_ref": "blinnred"
+		},
+		"center": "-3 0.0 -6.0",
+		"radius": 1.0,
+		"_name": "blinnred",
+		"_type": "sphere"
+    },
+	    {
+		"shader": {
+		    "_ref": "normal"
+		},
+		"center": "0 0.0 -6.0",
+		"radius": 1.0,
+		"_name": "normal",
+		"_type": "sphere"
+    },
+    {
+        "shader": {
+            "_ref": "mirror"
+        },
+		"center": "0 6.0 -6.0",
+		"radius": 3.0,
+		"_name": "mirror",
+		"_type": "sphere"
+    },
+    {
+        "shader": {
+		"_ref": "floor"
+	    },
+	    "v0": "-450.0 -3.0 -119",
+	    "v1": "0.0 -3.0 0",
+	    "v2": "450 -3.0 -119",
+	    "_name": "triangle1",
+	    "_type": "triangle"
+    } 
+    
+]
+    }
+}

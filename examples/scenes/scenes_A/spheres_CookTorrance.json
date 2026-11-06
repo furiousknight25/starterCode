@@ -1,0 +1,169 @@
+{
+    "scene": {
+	"bgColor": "0.3 0.4 0.35",
+	"camera": [{
+	    "position": "0 0 0",
+	    "viewDir": "0.0 0.0 -1",
+	    "focalLength": 1.0,
+	    "imagePlaneWidth": 0.5,
+	    "_name": "main",
+	    "_type": "perspective"
+	}],
+	"light": [
+	    {
+		"position": "50 20 50",
+		"intensity": "10000.0 9000.9804 9000.9569",
+		"_type": "point"
+	    },
+	    {
+		"position": "-50 20 50",
+		"intensity": "10000.0 9000.9804 9000.9569",
+		"_type": "point"
+	    },
+	    {
+		"position": "0 -50 50",
+		"intensity": "1000.0 900.9804 900.9569",
+		"_type": "point"
+	    }
+	],
+
+	"shader": [
+	    {
+		"albedo": "1.00 0.78 0.34",
+		"roughness": 0.15,
+		"metallic": 1.0,
+		"refractiveIndex": "0.18 0.35 1.80",
+		"absorptionCoef": "4.90 2.70 1.92",
+		"_name": "gold",
+		"_type": "CookTorrance"
+	    },
+	    {
+		"albedo": "0.95 0.64 0.54",
+		"roughness": 0.20,
+		"metallic": 1.0,
+		"refractiveIndex": "0.29 0.95 1.10",
+		"absorptionCoef": "3.80 2.59 2.36",
+		"_name": "copper",
+		"_type": "CookTorrance"
+	    },
+	    {
+		"albedo": "0.97 0.96 0.91",
+		"roughness": 0.05,
+		"metallic": 1.0,
+		"refractiveIndex": "0.15 0.14 0.13",
+		"absorptionCoef": "3.45 3.38 3.27",
+		"_name": "silver",
+		"_type": "CookTorrance"
+	    },
+	    {
+		"albedo": "0.68 0.68 0.66",
+		"roughness": 0.10,
+		"metallic": 1.0,
+		"refractiveIndex": "0.47 0.46 0.39",
+		"absorptionCoef": "3.40 2.88 2.36",
+		"_name": "platinum",
+		"_type": "CookTorrance"
+	    },
+	    {
+		"albedo": "0.56 0.57 0.58",
+		"roughness": 0.40,
+		"metallic": 1.0,
+		"refractiveIndex": "2.93 2.93 2.69",
+		"absorptionCoef": "3.07 2.92 2.77",
+		"_name": "iron",
+		"_type": "CookTorrance"
+	    },
+	    {
+		"albedo": "0.54 0.57 0.58",
+		"roughness": 0.30,
+		"metallic": 1.0,
+		"refractiveIndex": "2.72 2.56 2.29",
+		"absorptionCoef": "3.84 3.37 2.94",
+		"_name": "titanium",
+		"_type": "CookTorrance"
+	    },
+	    {
+		"albedo": "0.58 0.57 0.56",
+		"roughness": 0.25,
+		"metallic": 1.0,
+		"refractiveIndex": "3.67 3.41 2.85",
+		"absorptionCoef": "5.42 5.10 4.95",
+		"_name": "gallium",
+		"_type": "CookTorrance"
+	    }
+	    
+	],
+	"shape": [
+	    {
+		"shader": {
+		    "_ref": "gallium"
+		},
+		"center": "0.0 0.0 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "titanium"
+		},
+		"center": "4.0 0.0 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "iron"
+		},
+		"center": "2.0 3.464 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "platinum"
+		},
+		"center": "-2.0 3.464 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "silver"
+		},
+		"center": "-4.0 0.0 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "copper"
+		},
+		"center": "-2.0 -3.464 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "gold"
+		},
+		"center": "2.0 -3.464 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    }
+
+	]
+    }
+}

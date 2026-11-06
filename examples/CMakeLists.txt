@@ -70,6 +70,20 @@ target_link_libraries(ScratchRender PRIVATE
 	ZLIB::ZLIB
 )
 
+add_executable(
+  JsonLoaderScene
+  JsonLoaderScene.cpp
+  ${CMAKE_SOURCE_DIR}/src/SceneLoader/SceneParser_JSON.cpp
+  )
+target_include_directories(JsonLoaderScene PRIVATE
+	${CMAKE_SOURCE_DIR}/src
+	${CMAKE_SOURCE_DIR}/buildVCPkg/vcpkg_installed/x64-linux/include
+)
+target_link_libraries(JsonLoaderScene PRIVATE
+	cs4212-util
+	PNG::PNG
+	ZLIB::ZLIB
+)
 # ── Debug Visualizer: automatically link to all example targets ──
 if(DEBUG_VIS)
   # Demo program that showcases the debug visualizer
@@ -77,7 +91,7 @@ if(DEBUG_VIS)
   target_include_directories(debugvis_demo PRIVATE ${CMAKE_SOURCE_DIR}/src)
   target_link_libraries(debugvis_demo PRIVATE cs4212-util PNG::PNG ZLIB::ZLIB)
 
-  foreach(tgt vectest SphereRender SceneRender ShaderRender ScratchRender debugvis_demo)
+  foreach(tgt vectest SphereRender SceneRender ShaderRender ScratchRender JsonLoaderScene debugvis_demo)
     if(TARGET ${tgt})
       target_link_libraries(${tgt} PRIVATE debugvis)
     endif()

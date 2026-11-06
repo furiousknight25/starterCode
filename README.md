@@ -1,8 +1,11 @@
-Commands to build and run the unit tests for vec3's 
 
-cmake --build buildVCPkg --target utest_vec3 --- builds the tools to run the tests
+#LOADING STUFF
+-w width
+-h height
+-o output file name
 
- ./buildVCPkg/utests/utest_vec3 -s --- this runs the tests, I believe -s looks for the successes
+./buildVCPkg/examples/JsonLoaderScene examples/scenes/scenes_A/threeTriangles.json -w 300 -h 200 -o output.png
+
 
 ## vectest(testing the raycast vectors from the camera)
 
@@ -39,3 +42,5 @@ cmake --build buildVCPkg --target SceneRender --- builds the multi-shape scene r
 
 cmake --build buildVCPkg --target ShaderRender --- builds the shader renderer
 ./buildVCPkg/examples/ShaderRender --- renders lambertian and blinn-phong spheres
+
+

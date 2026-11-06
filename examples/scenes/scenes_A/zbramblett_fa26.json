@@ -1,0 +1,88 @@
+{
+    "scene": {
+	"camera": [{
+	    "position": "0 2.0 1.0",
+	    "viewDir": "0 -0.3 -1.0",
+	    "focalLength": 1.0,
+	    "imagePlaneWidth": 1.0,
+	    "_name": "main",
+	    "_type": "perspective"
+	}],
+	"light": [
+	    {
+		"position": "4.0 4.0 0.0",
+		"intensity": "0.8 0.68 0.56",
+		"_type": "point"
+	    },
+	    {
+		"position": "-4.0 2.0 -1.0",
+		"intensity": "0.14 0.21 0.35",
+		"_type": "point"
+	    }
+	],
+	"shader": [
+	    {
+		"diffuse": "0 0.8 0.8",
+		"_name": "matte",
+		"_type": "Lambertian"
+	    },
+	    {
+		"diffuse": "0 0.8 0.8",
+		"specular": "0.6 0.6 0.6",
+		"phongExp": 16.0,
+		"_name": "satin",
+		"_type": "BlinnPhong"
+	    },
+	    {
+		"diffuse": "0 0.8 0.8",
+		"specular": "1 1 1",
+		"phongExp": 200.0,
+		"_name": "glossy",
+		"_type": "BlinnPhong"
+	    },
+	    {
+		"diffuse": "0.5 0.5 0.5",
+		"_name": "floorShader",
+		"_type": "Lambertian"
+	    }
+	],
+	"shape": [
+	    {
+		"shader": {
+		    "_ref": "floorShader"
+		},
+		"center": "0 -100.5 -5.0",
+		"radius": 100.0,
+		"_name": "floorSphere",
+		"_type": "sphere"
+	    },
+	    {
+		"shader": {
+		    "_ref": "matte"
+		},
+		"center": "-1.2 0.0 -4.0",
+		"radius": 0.5,
+		"_name": "leftsphere",
+		"_type": "sphere"
+	    },
+	    {
+		"shader": {
+		    "_ref": "satin"
+		},
+		"center": "0.0 0.0 -4.0",
+		"radius": 0.5,
+		"_name": "middlesphere",
+		"_type": "sphere"
+	    },
+	    {
+		"shader": {
+		    "_ref": "glossy"
+		},
+		"center": "1.2 0.0 -4.0",
+		"radius": 0.5,
+		"_name": "rightsphere",
+		"_type": "sphere"
+	    }
+	]
+    }
+}

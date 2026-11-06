@@ -1,0 +1,128 @@
+{
+    "scene": {
+	"bgColor": "0.3 0.4 0.35",
+	"camera": [{
+	    "position": "0 0 0",
+	    "viewDir": "0.0 0.0 -1",
+	    "focalLength": 1.0,
+	    "imagePlaneWidth": 0.5,
+	    "_name": "main",
+	    "_type": "perspective"
+	}],
+	"light": [{
+	    "position": "100 25 50",
+	    "intensity": "1.0 0.9804 0.9569",
+	    "_type": "point"
+	}],
+	"shader": [
+	    {
+		"diffuse": "1.0 1.0 1.0",
+		"_name": "white",
+		"_type": "Lambertian"
+	    },
+	    {
+		"diffuse": "1.0 0.0 0.0",
+		"_name": "red",
+		"_type": "Lambertian"
+	    },
+	    {
+		"diffuse": "0.0 1.0 0.0",
+		"_name": "green",
+		"_type": "Lambertian"
+	    },
+	    {
+		"diffuse": "0.0 0.0 1.0",
+		"_name": "blue",
+		"_type": "Lambertian"
+	    },
+	    {
+		"diffuse": "1.0 0.0 1.0",
+		"_name": "magenta",
+		"_type": "Lambertian"
+	    },
+	    {
+		"diffuse": "1.0 1.0 0.0",
+		"_name": "yellow",
+		"_type": "Lambertian"
+	    },
+	    {
+		"diffuse": "0.0 1.0 1.0",
+		"_name": "cyan",
+		"_type": "Lambertian"
+	    }
+	    
+	],
+	"shape": [
+	    {
+		"shader": {
+		    "_ref": "white"
+		},
+		"center": "0.0 0.0 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "red"
+		},
+		"center": "4.0 0.0 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "green"
+		},
+		"center": "2.0 3.464 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "blue"
+		},
+		"center": "-2.0 3.464 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "yellow"
+		},
+		"center": "-4.0 0.0 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "cyan"
+		},
+		"center": "-2.0 -3.464 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+
+	    {
+		"shader": {
+		    "_ref": "magenta"
+		},
+		"center": "2.0 -3.464 -20",
+		"radius": 1.75,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    }
+
+	]
+    }
+}

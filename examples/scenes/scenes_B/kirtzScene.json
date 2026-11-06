@@ -1,0 +1,77 @@
+{
+    "scene": {
+	"camera": [{
+	    "position": "0 5.0 0.0",
+	    "viewDir": "0.0 0.0 -1.0",
+	    "focalLength": 0.2,
+	    "imagePlaneWidth": 0.5,
+	    "_name": "main",
+	    "_type": "perspective"
+	}],
+
+	"light": [
+	    {
+		"_type": "shape",
+		"intensity": "20.0 20.0 20.0",
+	    
+		"shape" : {
+		    "shader": {
+			"_ref": "whiteLight"
+		    },
+		    "center": "0.0 30.0 -10.0",
+		    "radius": 5.0,
+		    "_name": "lightEmitter",
+		    "_type": "sphere"
+		}
+	    }
+	],
+
+	"shader": [
+	    {
+		"diffuse": "0.5 0.5 0.5",
+		"_name": "greyMat",
+		"_type": "Diffuse"
+	    },
+	    {
+		"diffuse": "0.0 0.75 0.0",
+		"_name": "green",
+		"_type": "Diffuse"
+	    },
+	    {
+		"_name": "mirror",
+		"_type": "Mirror"
+	    }
+	],
+	"shape": [
+	    {
+		"shader": {
+		    "_ref": "greyMat"
+		},
+		"v0": "-200.0 0.0 50.0",
+		"v1": "200.0 0.0 50.0",
+		"v2": "0.0 0.0 -1000.0",
+		"_name": "ground",
+		"_type": "triangle"
+	    },
+	    {
+		"shader": {
+		    "_ref": "green"
+		},
+		"center": "3.0 6.0 -10.0",
+		"radius": 5,
+		"_name": "s1",
+		"_type": "sphere"
+	    },
+	    {
+		"shader": {
+		    "_ref": "mirror"
+		},
+		"center": "-9.0 6.0 -14.0",
+		"radius": 5,
+		"_name": "s2",
+		"_type": "sphere"
+	    }
+	],
+	"_bgColor": "0.0 0.0 0.0"
+    }
+}

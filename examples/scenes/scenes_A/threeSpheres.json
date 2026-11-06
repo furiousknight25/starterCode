@@ -1,0 +1,61 @@
+{
+    "scene": {
+	"camera": [ {
+	    "position": "0 0 0",
+	    "viewDir": "0 0 -1",
+	    "focalLength": 0.70,
+	    "imagePlaneWidth": 0.5,
+	    "_name": "main",
+	    "_type": "perspective"
+	}
+		  ],
+	"light": [{
+	    "position": "-1 1 0",
+	    "intensity": "1.0 1.0 1.0",
+	    "_type": "point"
+	}],
+	"shader": [
+	    {
+		"diffuse": ".992 .863 .239",
+		"_name": "yellow",
+		"_type": "Lambertian"
+	    },
+	    {
+		"diffuse": ".149 .451 .698",
+		"_name": "blue",
+		"_type": "Lambertian"
+	    }
+	],
+
+	"shape": [
+	    {
+		"shader": {
+		    "_ref": "yellow"
+		},
+		"center": "0 -1.25 -7",
+		"radius": 0.3,
+		"_name": "sphere1",
+		"_type": "sphere"
+	    },
+	    {
+		"shader": {
+		    "_ref": "blue"
+		},
+		"center": "0 0 -10",
+		"radius": 3,
+		"_name": "sphere2",
+		"_type": "sphere"
+	    },
+	    {
+		"shader": {
+		    "_ref": "yellow"
+		},
+		"center": "0 0 -15",
+		"radius": 5,
+		"_name": "sphere3",
+		"_type": "sphere"
+	    }
+	]
+    }
+}
+

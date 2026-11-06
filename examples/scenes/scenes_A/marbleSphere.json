@@ -1,0 +1,46 @@
+{
+    "scene": {
+	"camera": [{
+	    "position": "0 0 0",
+	    "viewDir": "0 0 -1",
+	    "focalLength": 1.0,
+	    "imagePlaneWidth": 0.5,
+	    "_name": "main",
+	    "_type": "perspective"
+	}],
+	"light": [{
+	    "position": "0 10 0",
+	    "intensity": "1.0 1.0 1.0",
+	    "_type": "point"
+	},
+	{
+	    "position": "0 -10 0",
+	    "intensity": "1.0 1.0 1.0",
+	    "_type": "point"
+	}
+       ],
+	"shader": [{
+	    "diffuse": {
+		"tex": "noise",
+		"data": "1.0 1.0 1.0"
+	    },
+	    "_name": "blue",
+	    "_type": "Lambertian"
+	}],
+	"texture": [
+            {
+		"_name": "noise",
+		"_type": "Marble"
+            }
+	],
+	"shape": [{
+	    "shader": {
+		"_ref": "blue"
+	    },
+	    "center": "0 0.0 -5",
+	    "radius": 1,
+	    "_name": "sphere1",
+	    "_type": "sphere"
+	}]
+    }
+}

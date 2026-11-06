@@ -46,6 +46,7 @@ class vec3 {
 		}
 
 		static const vec3 ONE;
+		static const vec3 ZERO;
 };
 
 // color is an alias for vec3 (geometric clarity)
@@ -98,5 +99,6 @@ inline vec3 normalize(const vec3& v) {
 }
 
 inline constexpr vec3 vec3::ONE{1.0f,1.0f,1.0f};
+inline constexpr vec3 vec3::ZERO{0.0f,0.0f,0.0f};
 
 #endif

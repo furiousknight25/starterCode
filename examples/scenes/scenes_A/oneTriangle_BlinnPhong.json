@@ -1,0 +1,34 @@
+{
+    "scene": {
+	"camera": [{
+	    "position": "0 0 10.4",
+	    "viewDir": "0 0 -1",
+	    "focalLength": 1.0,
+	    "imagePlaneWidth": 0.5,
+	    "_name": "main",
+	    "_type": "perspective"
+	}],
+	"light": [{
+	    "position": "0 0 1",
+	    "intensity": "1.0 1.0 1.0",
+	    "_type": "point"
+	}],
+	"shader": [{
+	    "diffuse": "0.8 0.3 0.7",
+	    "specular": "1.0 1.0 1.0",
+	    "phongExp": 64,
+	    "_name": "pink",
+	    "_type": "BlinnPhong"
+	}],
+	"shape": [{
+	    "shader": {
+		"_ref": "pink"
+	    },
+	    "v0": "-3.0 -3.0 0",
+	    "v1": "3.0 -3.0 0",
+	    "v2": "0 3.0 0",
+	    "_name": "triangle1",
+	    "_type": "triangle"
+	}]
+    }
+}
