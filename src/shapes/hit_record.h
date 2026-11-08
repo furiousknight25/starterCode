@@ -23,6 +23,8 @@ struct hit_record {
 
     // Pointer to shader of the shape we hit
     std::shared_ptr<Shader> shader{nullptr};//why not just have a reference to the shape 
+
+    std::vector<Light> filtered_lights;
     const std::vector<Light>* lights = nullptr;
 
     //A: pasing the vec3& without the & counts as a copy not a value

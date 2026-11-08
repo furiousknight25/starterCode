@@ -8,6 +8,7 @@
 #include "../shaders/BlinnPhong.h"
 #include "../shaders/MirrorShader.h"
 #include "../shaders/NormalShader.h"
+#include "../shaders/SinShader.h"
 
 #include <unordered_map>
 #include <iostream>
@@ -75,6 +76,9 @@ public:
         }
         else if (desc.type == "Mirror") {
             shader = std::make_shared<MirrorShader>();
+        }
+        else if (desc.type == "SinShader" || desc.type == "sin_shader" || desc.type == "Sin_Shader" || desc.type == "sinshader" || desc.type == "Sin" || desc.type == "sin") {
+            shader = std::make_shared<SinShader>();
         }
         else {
             std::cout << "  Unknown shader type '" << desc.type

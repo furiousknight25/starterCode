@@ -22,8 +22,9 @@ class LambertianShader : public Shader {
             if (rec.lights) {
               for (const auto &light : *rec.lights) {
                 
+
                 vec3 light_dir = normalize(light.position - rec.p);
-                
+
                 float dp = dot(light_dir, normal);
                 if (dp > 0.0f) {
                     vec3 col = light.intensity * dp * albedo * light.color;

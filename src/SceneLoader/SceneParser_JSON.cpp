@@ -235,6 +235,8 @@ void SceneParser_JSON::parseShader(const json &shader) {
 
   } else if (shaderDesc.type == "CoolToWarm") {
     shaderDesc.diffuse = extractShaderProperty(shader, "diffuse");
+  } else if (shaderDesc.type == "SinShader" || shaderDesc.type == "sin_shader" || shaderDesc.type == "Sin_Shader" || shaderDesc.type == "sinshader" || shaderDesc.type == "Sin" || shaderDesc.type == "sin") {
+    // SinShader
   }
 
   loader->addShader(shaderDesc);
