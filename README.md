@@ -1,9 +1,9 @@
 
-#LOADING STUFF
--w (int) width
--h (int) height
--o (string) output file name
--aa (int) anti aliasing
+#LOADING STUFF<br>
+-w (int) width<br>
+-h (int) height<br>
+-o (string) output file name<br>
+-aa (int) anti aliasing<br>
 ./buildVCPkg/examples/JsonLoaderScene examples/scenes/scenes_A/threeTriangles.json -w 300 -h 200 -o output.png
 
 
