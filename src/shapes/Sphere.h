@@ -62,4 +62,9 @@ public:
       
       return true;
     }
+
+    AABB bounding_box() const override {
+      vec3 r_vec(radius, radius, radius);
+      return AABB(position - r_vec, position + r_vec);
+    }
 };

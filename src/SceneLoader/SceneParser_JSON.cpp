@@ -123,6 +123,18 @@ void SceneParser_JSON::parseCamera(const json &camera) {
   ISceneLoader::vec position, viewDir;
   position = camera["position"];
 
+  if (camera.contains("viewDir")) {
+    viewDir = camera["viewDir"];
+  } else if (camera.contains("lookatPoint")) {
+    ISceneLoader::vec lookat = camera["lookatPoint"];
+    viewDir = {lookat.x - position.x, lookat.y - position.y, lookat.z - position.z};
+  } else if (camera.contains("lookAt")) {
+    ISceneLoader::vec lookat = camera["lookAt"];
+    viewDir = {lookat.x - position.x, lookat.y - position.y, lookat.z - position.z};
+  } else {
+    viewDir = {0.0f, 0.0f, -1.0f};
+  }
+
   float focalLength = camera.value("focalLength", 1.0f);
   float imagePlaneWidth = camera.value("imagePlaneWidth", 0.5f);
 

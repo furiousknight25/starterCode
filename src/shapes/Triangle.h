@@ -75,6 +75,21 @@ public:
         return intersect(r, ray_t.min, ray_t.max, rec);
     }
 
+    AABB bounding_box() const override {
+        if (points.empty()) return AABB::empty;
+        vec3 min_p = points[0];
+        vec3 max_p = points[0];
+        for (size_t i = 1; i < points.size(); ++i) {
+            min_p = vec3(std::min(min_p.x(), points[i].x()),
+                         std::min(min_p.y(), points[i].y()),
+                         std::min(min_p.z(), points[i].z()));
+            max_p = vec3(std::max(max_p.x(), points[i].x()),
+                         std::max(max_p.y(), points[i].y()),
+                         std::max(max_p.z(), points[i].z()));
+        }
+        return AABB(min_p, max_p);
+    }
+
 private:
     std::vector<vec3> points;
 };

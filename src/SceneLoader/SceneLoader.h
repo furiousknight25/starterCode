@@ -48,6 +48,8 @@ public:
         std::cout << "Loading camera: " << name << " [resolution: " << image_width << "x" << image_height << "]" << std::endl;
         m_scene.cam = PerspectiveCamera(image_width, image_height, focalLength);
         m_scene.cam.position = to_vec3(pos);
+        m_scene.cam.set_view_dir(to_vec3(viewDir));
+        m_scene.cam.set_viewport(imagePlaneWidth, image_width, image_height);
     }
 
     // --- Lights ---

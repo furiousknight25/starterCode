@@ -4,6 +4,7 @@
 #include "../math/ray.h"
 #include "../math/interval.h"
 #include "hit_record.h"
+#include "AABB.h"
 
 class Shape {
     public:
@@ -28,5 +29,10 @@ class Shape {
       }
       virtual bool intersect(const ray &r, interval ray_t, hit_record &rec) const {
           return intersect(r, ray_t.min, ray_t.max, rec);
+      }
+
+      // Returns the axis-aligned bounding box enclosing the shape
+      virtual AABB bounding_box() const {
+          return AABB::empty;
       }
 };

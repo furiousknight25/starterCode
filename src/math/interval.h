@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include <algorithm>
 
 class interval {
 public:
@@ -12,6 +13,9 @@ public:
           max(-std::numeric_limits<double>::infinity()) {} // Default empty interval
 
     interval(double min, double max) : min(min), max(max) {}
+
+    interval(const interval& a, const interval& b)
+        : min(std::min(a.min, b.min)), max(std::max(a.max, b.max)) {}
 
     double size() const {
         return max - min;

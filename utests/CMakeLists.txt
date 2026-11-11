@@ -24,6 +24,7 @@ set(UTESTS
   utest_ray
   utest_sphere
   utest_triangle
+  utest_bvh
   )
 
 # 

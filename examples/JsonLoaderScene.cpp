@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <chrono>
 
 int main(int argc, char* argv[]) {
     std::string scene_file = "examples/scenes/scenes_A/oneSphere.json";
@@ -13,6 +14,7 @@ int main(int argc, char* argv[]) {
     int image_width = 500;
     int image_height = 500;
     int spp = 1;
+    bool use_bvh = true;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -28,6 +30,10 @@ int main(int argc, char* argv[]) {
             } else {
                 spp = 16;
             }
+        } else if (arg == "-bvh" || arg == "--bvh") {
+            use_bvh = true;
+        } else if (arg == "-no-bvh" || arg == "--no-bvh") {
+            use_bvh = false;
         } else if (arg == "-o" && i + 1 < argc) {
             output_file = argv[++i];
         } else if (arg[0] != '-') {
@@ -40,9 +46,10 @@ int main(int argc, char* argv[]) {
     if (spp > 1) {
         std::cout << " (Anti-Aliasing: " << spp << " spp)";
     }
-    std::cout << std::endl;
+    std::cout << " [Acceleration: " << (use_bvh ? "BVH" : "None (Linear)") << "]" << std::endl;
 
     SceneContainer scene;
+    scene.use_bvh = use_bvh;
     auto loader = std::make_shared<SceneLoader>(scene, image_width, image_height);
     SceneParser_JSON parser(loader);
 
@@ -51,9 +58,14 @@ int main(int argc, char* argv[]) {
     scene.setImageSize(image_width, image_height);
     scene.cam.samples_per_pixel = spp;
 
+    auto start_time = std::chrono::high_resolution_clock::now();
     Framebuffer fb = scene.render();
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+
     fb.write_png(output_file);
     std::cout << "Render saved to: " << output_file << " (" << fb.width() << "x" << fb.height() << ")" << std::endl;
+    std::cout << "Render time: " << duration_ms << " ms (" << (duration_ms / 1000.0) << " seconds)" << std::endl;
 
     return 0;
 }

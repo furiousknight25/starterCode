@@ -16,6 +16,7 @@ public:
 
     float vp_width = 2.0f;
     float vp_height = 2.0f;
+    float image_plane_width = 2.0f;
 
     int image_width = 100; //alright I GUESS it gets defined here, framebuffer pulls, kinda weird though lol
     int image_height = 100;
@@ -28,6 +29,7 @@ public:
         : position(pos), rotation(rot),
           vp_height(v_height),
           vp_width(v_height * (float(width) / float(height < 1 ? 1 : height))),
+          image_plane_width(v_height * (float(width) / float(height < 1 ? 1 : height))),
           image_width(width), image_height(height < 1 ? 1 : height) {}
 
     virtual ~Camera() = default;

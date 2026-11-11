@@ -31,7 +31,8 @@ class BlinnPhong: public Shader {
                     sum += col;
                     
                     vec3 half_vector = normalize((light_dir + rec.view_dir) / 2);
-                    vec3 spec_col = pow(dot(half_vector, rec.normal), spec_intensity) * vec3(1.0,1.0,1.0);
+                    float n_dot_h = std::max(0.0f, dot(half_vector, normal));
+                    vec3 spec_col = std::pow(n_dot_h, spec_intensity) * vec3(1.0,1.0,1.0);
                     sum += spec_col;
                 }
 
