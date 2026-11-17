@@ -1,0 +1,283 @@
+Q: What is the visual characteristic of using an Orthographic projection to render a scene?
+    Parallel lines stay parallel and objects do not appear smaller as they get further away (there is no perspective foreshortening).
+
+Q: From class on Tuesday, what does the Orthographic Matrix do to vertices of your triangles?
+    It scales and translates the vertices from the orthographic viewing volume box [left, right] x [bottom, top] x [far, near] into the canonical view volume / NDC cube [-1, 1] x [-1, 1] x [-1, 1].
+
+Q: Write down the orthographic matrix.
+    [ 2/(r - l)       0             0        -(r + l)/(r - l) ]
+    [    0        2/(t - b)         0        -(t + b)/(t - b) ]
+    [    0            0        -2/(f - n)    -(n + f)/(f - n) ]
+    [    0            0             0                1        ]
+
+Q: Write down the dimensions of the box and the range of values it takes on.
+    Dimensions: 15 x 15 x 10
+    - X range: [-7.5, 7.5] (width = 15)
+    - Y range: [-7.5, 7.5] (height = 15)
+    - Z range: [-5.0, 5.0] (depth = 10, near = 5.0, far = -5.0)
+    Dimensions: 15 x 15 x 10
+    - X range: [-7.5, 7.5] (width = 15)
+    - Y range: [-7.5, 7.5] (height = 15)
+    - Z range: [-5.0, 5.0] (depth = 10, near = 5.0, far = -5.0)
+
+Q: Why would you use a uniform variable in a shader?
+    To pass values from the host (CPU code) to the device (GPU shaders) that stay constant for all vertices and fragments during a draw call, such as the model, view, and projection transformation matrices.    To pass values from the host (CPU code) to the device (GPU shaders) that stay constant for all vertices and fragments during a draw call, such as the model, view, and projection transformation matrices.
+
+Q: Which vector represents forward for your camera?
+    -m_W (or -Z in camera space)
+
+Q: Which vector represents left of your camera?
+    -m_U (or -X in camera space)
+
+Q: Why does moving forward or backward not change the scene with the orthographic projection?
+    Orthographic projection projects rays along parallel lines perpendicular to the view plane without perspective division. Moving the camera forward or backward only changes depth along the Z axis, which doesn't alter the projected X and Y coordinates on the screen as long as the geometry remains between the near and far clipping planes.
+
+ Lab - Adding Matrices to your Vertex Shader
+Learning Outcomes
+
+    Use matrices to process vertices in your Vertex Shader
+    Update the View Matrix with your camera information for a dynamic, interactive scene
+
+Your goal in this lab is add the Camera (or View) Matrix (and the projection matrices) to your OpenGL code to render your triangle in an interactive manner.
+What To Do In Lab
+
+I expect students to show up to lab and work on the week's tasks. The benefit of lab will be to get something done to help progress your code, learn some things about rendering, AND get support from (or provide support to) your peers.
+
+For lab, your goal within the hour will be to follow along as we add the code to support the View and Orthographic Projection matrices to render a single triangle. You will then need to add to the lab based on lecture on Thursday to add support for Perspective and (hopefully) Model matrices.
+
+    Note: This lab assumes that you've started reading over Chapter 17, Using Graphics Hardware. Specifically, Section 17.11 and 17.12 can be very helpful.  If you haven't done that yet, please read it now! Remember that you responsible for all reading to prepare you for what we do in this class and will be tested on these items.
+    You need to turn in answers to all questions to Canvas. Be sure to keep another document open so you can answer the various questions within this lab. 
+
+ 
+Adding Support for an Orthographic Projection - Step 1
+
+You should start with your code from the previous lab that rendered a triangle in coordinates that were specified in the Canonical View Volume (or Clip Coordinate Space). To move out of this confined space (where coordinates are between [-1, 1] in X, Y, and Z) so you can start to describe your scenes in more realistic coordinates, we need to add a Projection Matrix. In this Step, you will add support for an Orthographic Projection.
+
+Q: What is the visual characteristic of using an Orthographic projection to render a scene?
+    Parallel lines stay parallel and objects do not appear smaller as they get further away (there is no perspective foreshortening).
+
+Q: From class on Tuesday, what does the Orthographic Matrix do to vertices of your triangles?
+    It scales and translates the vertices from the orthographic viewing volume box [left, right] x [bottom, top] x [far, near] into the canonical view volume / NDC cube [-1, 1] x [-1, 1] x [-1, 1].
+
+Q: Write down the orthographic matrix.
+    [ 2/(r - l)       0             0        -(r + l)/(r - l) ]
+    [    0        2/(t - b)         0        -(t + b)/(t - b) ]
+    [    0            0        -2/(f - n)    -(n + f)/(f - n) ]
+    [    0            0             0                1        ]
+
+We will start by hard-coding your orthographic matrix. Recall that the orthographic "box" specifies a left, right, bottom, top, and near and far planes. I chose a box that is centered on the origin for this example, but this is not a requirement. 
+
+ // The ortho parameters, in order: left, right, bottom, top, zNear, zFar
+ float halfWidth = 15.0 / 2.0;
+ float halfHeight = halfWidth;
+
+ float left = -halfWidth;
+ float right = halfWidth;
+
+ float bottom = -halfHeight;
+ float top = halfHeight;
+
+ float near = 5.0f;
+ float far = -5.0f;
+
+ glm::mat4 M_ortho = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, near, far);
+
+One very important note  is that because the viewing direction looks down the -Z (or -W) direction for cameras, the far value will have a more negative value when we create this matrix.
+
+This code should be placed somewhere before you enter into your while loop. We need to create it once so we can use it within the while loop.
+
+Notice the size of the box we created above.
+
+Q: Write down the dimensions of the box and the range of values it takes on.
+    Dimensions: 15 x 15 x 10
+    - X range: [-7.5, 7.5] (width = 15)
+    - Y range: [-7.5, 7.5] (height = 15)
+    - Z range: [-5.0, 5.0] (depth = 10, near = 5.0, far = -5.0)
+
+Now, let's change your triangle vertices to be within this orthographic box. A suggested triangle might be the following, but you're welcome to use any triangle that fits within the orthographic box we defined.
+
+V0 = (-3.0f, -3.0f, 0.0f)
+V1 = (3.0f, -3.0f, 0.0f)
+V2 = (0.0f, 3.0f, 0.0f)
+
+ 
+Connecting the Matrices to Your Shader - Step 2
+
+We now need to modify your vertex shader. I would strongly suggest you make a copy of vertexShader_passthrough.glsl to a new shader file that you will use to better support vertex processing. Let's call it
+
+vertexShader_withMatrixTransformation.glsl
+
+You will want to modify your vertex shader to look like this:
+
+#version 330 core
+
+layout(location=0) in vec3 in_Position;
+layout(location=1) in vec3 in_Color;
+
+uniform mat4 projMatrix;
+uniform mat4 viewMatrix;
+
+out vec3 color;
+
+void main(void)
+{
+  color = in_Color;
+  gl_Position = projMatrix * viewMatrix * vec4(in_Position, 1.0);
+}
+
+There are a couple of things to notice here:
+
+    Uniform variables that represent the two matrices we will need to use within the shader.  Read the last bullet below for more detail in Uniform variables.
+    Multiplication of the in_Position by these matrices to transform the vertex to the canonical view volume.
+
+As a bit of recap, Section 17.12 contains the details for these new shaders.  Here are some key points for each:
+
+    Shaders create variables with different declaration types. In our current shaders, you see layout, in, out, and uniform. Variables that are declared without these keywords are local variables to the shader.  You may want to re-read Section 17.8 for a review of these terms too.
+    The layout constructs in the shader code determine the incoming and outgoing data.  For the vertex shader, we now have two sources of incoming data: the positions (location or attribute=0) and the color (location or attribute 1). These are both vec3 and have been given a unique variable name for use in the shader code.  
+    The in and out variable declaration determine what the shader will send (out) to the next shader or receive from (in) the previous shader. In this way, a vertex shader can pass or share data with the fragment shader that follows it. This is an important concept to understand because this is HOW per-vertex data is sent to the fragment shaders.  The fragment shader system on the graphics card will use barycentric interpolation to determine the exact value at each fragment using the alpha, beta, and gamma parameters of the fragment.  So if a color is set at each vertex, the color will be interpolated at each fragment in the fragment shader.
+    The uniform declarations are variables that are communicated from the host (your CPU code) to the device.  So this means that we will copy the projection matrix and the camera matrix from the host to the device before we run the shader. Uniform variables are the primary mechanism to send in different data types, from ints, floats, vec3, mat4, etc... from your host code to the device with GLSL.
+
+ 
+Adding Code to Copy the Matrices to Your Shader - Step 3
+
+There are a couple steps you need to do this.  We have a shader that has uniform variables for a projection matrix (projMatrix) and a view or camera matrix (viewMatrix).  On the host, we need to get a handle to these uniform variables so that we can copy data into them from the host.
+
+To get a handle to your uniform variables, you will use my GLSL shader code to get this reference. If you're interested in the underlying call, feel free to look at GLSL.[h,cpp].  Since we called our variables projMatrix and viewMatrix, we can use those names to get handles to those variables in the shader.
+
+For example, in you code. right after you load the shaders and call "createProgram" in my GLSL interface, you will need to make the following call to get the identifier that refers to the projMatrix variable in the shader:
+
+GLint projMatrixID = shader.createUniform("projMatrix");
+
+The call to createUniform can be used to get a reference to any uniform variable in the shaders if you want to communicate host data to the device shaders. Once the shader program is created, you can get a handle to the uniform shader variables.  
+
+Here is the complete example including the loading of the shaders:
+
+  // Create a shader using my GLSLObject class                                                                                                       
+  sivelab::GLSLObject shader;
+  shader.addShader( "vertexShader_withMatrices.glsl", sivelab::GLSLObject::VERTEX_SHADER );
+  shader.addShader( "fragmentShader_barycentric.glsl", sivelab::GLSLObject::FRAGMENT_SHADER );
+  shader.createProgram();
+
+  GLuint projMatrixID, viewMatrixID;
+  projMatrixID = shader.createUniform( "projMatrix" );
+  viewMatrixID = shader.createUniform( "viewMatrix" );
+
+Q: Why would you use a uniform variable in a shader?
+    To pass values from the host (CPU code) to the device (GPU shaders) that stay constant for all vertices and fragments during a draw call, such as the model, view, and projection transformation matrices.
+ 
+Copying Matrices to the Device
+
+We're almost ready to make this work. We already created an orthographic projection matrix in Step 1.  However, we have not yet created a view (or camera) matrix. For this step, we will hard-code your camera so, before you enter the while loop that redraws the screen each time, we can use some code like this: 
+
+...
+glm::vec3 m_pos(0,0,0), m_viewDir(0,0,-1);
+glm::vec3 m_U(1,0,0), m_V(0,1,0), m_W(0,0,1);
+
+double timeDiff = 0.0, startFrameTime = 0.0, endFrameTime = 0.0;
+
+/* Loop until the user closes the window */
+while (!glfwWindowShouldClose(window)) {
+...
+
+Do those values and basis vectors look familiar?  They should.  That is the default camera location and orientation. 
+
+With this data and the orthographic projection matrix you created in Step 1 (M_ortho), we are ready to copy two matrices to the device within the game loop.
+
+// create the view matrix from our camera data                                                                                                   
+glm::mat4 M_view = glm::lookAt( m_pos, m_pos - m_W, m_V );
+
+/* Render your objects here */
+shader.activate();
+
+// copy from the host to the device the view matrix and the projection matrix                                                                                       
+glUniformMatrix4fv(projMatrixID, 1, GL_FALSE, glm::value_ptr( M_ortho ));
+glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr( M_view ));
+
+glBindVertexArray(m_VAO);
+glDrawArrays(GL_TRIANGLES, 0, 3);
+glBindVertexArray(0);
+
+shader.deactivate();
+
+In this step there are some things to note:
+
+    We use GLM's lookAt function to create the View or Camera Matrix for us (M_view).  We could have constructed it on our own but this is a nice function to help us create that matrix. The function takes the position of the camera as the first argument, the point in space where the camera is looking (m_pos - m_W gets us that location), and the Up vector from the camera. Note that we hard-coded the camera here as the default, but your camera classes have everything you need to generalize this to any view.  More info on GLM's functions can be found here: OpenGL GLM Documentation Page
+    We also use OpenGL functions (glUniform*) to copy different types of data from the host to the device. In this case, we copy a Matrix 4. We use the Uniform variable handles we got previously to copy the different matrices to the GPU.  More information on the many glUniform function calls can be found here: Link to OpenGL glUniform Documentation
+    Specifically, the glUniformMatrix4fv call we made here needs the uniform variable handle as the first argument, the size of the type (in this case just 1) as the second argument, whether to automatically transpose the matrix (FALSE in this case -- we want the matrix as is when we copy it), and a pointer to the data to copy as the fourth argument, which we get by using GLM's value_ptr function.
+
+You should now be able to run this code and see your new triangle's coordinate show up.  Here's what it looks like with my code:
+
+orthographic triangle
+
+ 
+Moving Your Camera - Step 4
+
+We will now make one last, simple addition to your code.  We're going to move the camera!  To move the camera with the code above, we only need to modify the camera's position, m_pos. We will do that with the following code:
+
+...
+/* Poll for and process events */
+glfwPollEvents();
+
+float moveRatePerFrame = 0.05;
+
+if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+   m_pos = m_pos + -m_W * moveRatePerFrame;
+}
+else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+   m_pos = m_pos - m_U * moveRatePerFrame;
+}
+else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+   m_pos = m_pos + m_W * moveRatePerFrame;
+}
+else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+   m_pos = m_pos + m_U * moveRatePerFrame;
+}
+
+if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
+   std::cout << "fps: " << 1.0 / timeDiff << std::endl;
+}
+
+Now, run your code and move your camera!  Because you're using an orthographic camera you will not notice any forward or backward movement, but strafing will definitely work!
+
+strafing examplestrafing examplestrafing examplestrafing example
+
+Q: Which vector represents forward for your camera?
+    -m_W (or -Z in camera space)
+
+Q: Which vector represents left of your camera?
+    -m_U (or -X in camera space)
+
+Q: Why does moving forward or backward not change the scene with the orthographic projection?
+    Orthographic projection projects rays along parallel lines perpendicular to the view plane without perspective division. Moving the camera forward or backward only changes depth along the Z axis, which doesn't alter the projected X and Y coordinates on the screen as long as the geometry remains between the near and far clipping planes.
+
+ 
+Perspective Matrix and Model Matrix Additions - Step 5
+
+Using the code above as a starting point and the notes from lecture this week, as well as the reading, you are to add support for the Perspective Matrix and a Model Matrix. This will allow you to view your scenes with linear perspective and also dynamically translate/scale/rotate your triangle.  The goal will be to have a much more dynamically rendered scene. You should also work to add in your own Camera class data to support the different projection and view matrices, rather than hard-coding the projection and view matrices. 
+
+For Step 5, you will need to:
+
+    Add support for a Perspective Projection.
+    Add support for a Model Matrix and change the matrix during the rendering loop so that the Triangle's position, scale, or orientation are modified as the program is running
+    Use your Camera classes to retrieve the projection matrix data and view matrix data so that you can construct the necessary matrices rather than using simplified data or the default camera setup as we did in the first parts of this lab.
+
+Implementation details:
+1. Model Matrix:
+   Inside the render loop, compute a rotating model matrix using the elapsed time:
+   float angle = (float)glfwGetTime() * 0.8f;
+   glm::mat4 M_model = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f));
+   glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(M_model));
+
+2. Perspective Projection & Toggle:
+   glm::mat4 M_persp = glm::perspective(glm::radians(60.0f), aspectRatio, 0.1f, 100.0f);
+   Pressing 'P' toggles between Orthographic (M_ortho) and Perspective (M_persp) projections interactively.
+
+3. Vertex Shader (vertexShader_withMatrixTransformation.glsl):
+   gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(in_Position, 1.0);
+
+4. Screen Capture:
+   Saved image of the rendered triangle with matrix transformations to OpenGL/triangle_matrices.png
+
+ 
+
+Be sure to save your code back to your repository on github.com by committing and pushing your changes back to your repository on github.  Be sure to turn in any answers to the questions posed in this lab including a screenshot of your background color in the window.

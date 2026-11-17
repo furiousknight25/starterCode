@@ -6,6 +6,21 @@
 -aa (int) anti aliasing<br>
 ./buildVCPkg/examples/JsonLoaderScene examples/scenes/scenes_A/threeTriangles.json -w 300 -h 200 -o output.png
 
+ ### How to Use RENDERDOC
+  
+  1. Launch the UI:
+    qrenderdoc &
+  
+  2. Capture your executable:
+      • Go to File → Launch Application (or Ctrl+N).
+      • Set Executable Path to:
+        /home/collector25061/Documents/GitHub/starterCode/buildVCPkg/OpenGL/glfwExample
+  
+      • Set Working Directory to:
+        /home/collector25061/Documents/GitHub/starterCode
+  
+      • Click Launch, and press F12 (or PrintScreen) while the GLFW window is focused to capture a frame.
+  
 
 ## vectest(testing the raycast vectors from the camera)
 

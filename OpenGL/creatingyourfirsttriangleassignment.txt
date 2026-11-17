@@ -1,0 +1,29 @@
+Q: What is a term used to describe the parallel computing cores found on modern graphics hardware? 
+    hardware acceleration 
+Q: What does the term host mean as related to graphics hardware? 
+    the cpu
+Q: What does the term device mean as related to graphics hardware? 
+    the gpu
+Q:  Report the Renderer, OpenGL, and GLFW version information supported on your machine. These outputs were generated when you ran the program above.
+    ➜  starterCode git:(main) ✗ ./buildVCPkg/OpenGL/glfwExample 
+    Renderer: AMD Radeon Graphics (radeonsi, renoir, ACO, DRM 3.64, 7.0.0-42-generic)
+    OpenGL version supported: 4.6 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4
+    GL_MAJOR_VERSION: 4
+Q: Which function calls query the Renderer and Version OpenGL state? What else can this call return for you?  [You can of course look up info on Google, but another easy place is often the man pages, using "man glGetString".
+    glGetString(GL_RENDERER)
+    glGetString(GL_VERSION)
+    It can also take:
+    - GL_VENDOR: returns the company/vendor of the GPU/driver (e.g. AMD, NVIDIA, Intel)
+    - GL_SHADING_LANGUAGE_VERSION: returns the supported GLSL shading language version string
+    - GL_EXTENSIONS: returns supported extension strings
+    Also glGetIntegerv can be used to query GL_MAJOR_VERSION and GL_MINOR_VERSION.
+Q: Report all OpenGL function calls you see in the source file. OpenGL call start only with a lower-case "gl". Note that "glfw" is not an OpenGL call, but rather a function call to the GLFW windowing and application framework.
+    glGetString, glEnable, glDepthFunc, glClearColor, glViewport, glGetIntegerv, glGenBuffers, glBindBuffer, glBufferData, glGenVertexArrays, glBindVertexArray, glEnableVertexAttribArray, glVertexAttribPointer, glClear, glDrawArrays, glDeleteBuffers, glDeleteVertexArrays
+    
+    whats the point of having gl and glfw sepperated?
+    GLFW handles creating the OS window, listening for keyboard/mouse inputs, and creating the OpenGL context, while OpenGL does the actual 3D rendering and GPU commands inside that window. Separating them keeps OpenGL portable so it doesnt have to deal with OS-specific window management.
+Q: What part of the shading system is doing the barycentric interpolation of color for you?
+    The rasterizer (rasterization stage) between the vertex shader and the fragment shader. Any vertex attribute passed out of the vertex shader to the fragment shader gets automatically barycentrically interpolated across the triangle by the fixed-function rasterizer hardware.
+
+Q: Why is programming OpenGL considered heterogeneous multiprocessing and what does that mean to you?
+    It is heterogeneous multiprocessing because the program executes across two completely different processors with different architectures: the CPU (host) and the GPU (device). The CPU handles sequential logic, window events, and setup in C++, while the GPU runs massive parallel shader stages (vertex and fragment shaders) on thousands of cores at once. To me, it means I have to write code for both the host and device, explicitly manage moving vertex data over the bus into GPU memory (VBOs), and coordinate shader execution.

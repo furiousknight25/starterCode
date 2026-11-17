@@ -6,6 +6,24 @@
 #
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
+add_executable(test_pngWrite
+  test_pngWrite.cpp
+)
+target_link_libraries(test_pngWrite PRIVATE
+  cs4212-util
+  PNG::PNG
+  ZLIB::ZLIB
+)
+
+add_executable(test_readPNGFile
+  test_readPNGFile.cpp
+)
+target_link_libraries(test_readPNGFile PRIVATE
+  cs4212-util
+  PNG::PNG
+  ZLIB::ZLIB
+)
+
 add_executable(
   vectest
   vectest.cpp
