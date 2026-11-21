@@ -1,4 +1,15 @@
+## HOW TO RENDER OPN GL STUFF
 
+./buildVCPkg/OpenGL/glfwExample   
+  1: Switch to Lambertian Shader
+  2: Switch to Blinn-Phong Shader
+  3: Switch to Normal Shader
+  M: Toggle Mesh (Single Triangle -> Two Triangles -> Sphere -> OBJ Model (le bunyyyy))
+  P: Toggle Perspective / Orthographic projection
+  W/A/S/D: Move camera
+  ESC: Exit
+
+WASD to move around 
 #LOADING STUFF<br>
 -w (int) width<br>
 -h (int) height<br>

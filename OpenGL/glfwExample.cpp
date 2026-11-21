@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
 
     glBindVertexArray(0);
 
-    std::string objFilename = "examples/scenes/scenes_B/objFiles/bunny.obj";
+    std::string objFilename = "issac.obj";
     if (argc > 1) {
         objFilename = argv[1];
     }
@@ -336,7 +336,7 @@ int main(int argc, char* argv[])
         glUniform3f(specularColorID, 1.0f, 1.0f, 1.0f);
         glUniform1f(specularExponentID, 32.0f);
         glUniform1f(sinPosID, rotationAngle);
-        
+
         // Render selected geometry
         if (currentMesh == 0) {
             // Mesh 0: Single Triangle (Step 1-4)
@@ -395,8 +395,8 @@ int main(int argc, char* argv[])
             glBindVertexArray(0);
 
         } else if (currentMesh == 3 && hasObj) {
-            glm::mat4 model_base = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f,0.0f,1.0f));
-            glm::mat4 model = glm::rotate(model_base, glm::radians(rotationAngle), glm::vec3(1.0f, 0.0f, 0.0f));
+            glm::mat4 model_base = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f,0.0f,1.0f)); //no longer needed
+            glm::mat4 model = glm::rotate(model_base, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
             glm::mat4 normalMat = glm::transpose(glm::inverse(model));
 
             glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(model));
