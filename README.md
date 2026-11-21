@@ -12,8 +12,7 @@
 ## Compared to ray tracer
 - no shadows, or mirrors. I believe thats it
 
-WASD to move around 
-#LOADING STUFF<br>
+###LOADING STUFF in raytracer<br>
 -w (int) width<br>
 -h (int) height<br>
 -o (string) output file name<br>
