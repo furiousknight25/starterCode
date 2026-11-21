@@ -87,5 +87,33 @@ effingerSpheres.json (7 spheres, 1 light):
 - 250x250: No BVH: 0.09s | BVH: 0.09s (~1x speedup)
 
 
+## OpenGL GLSL Shaders Lab (Lambertian, Blinn-Phong & Normal Shaders)
+
+Build:
+```bash
+cmake --build buildVCPkg --target glfwExample
+```
+
+Run:
+```bash
+./buildVCPkg/OpenGL/glfwExample
+```
+Or run with an OBJ file of your choice:
+```bash
+./buildVCPkg/OpenGL/glfwExample examples/scenes/scenes_B/objFiles/UtahTeapot.obj
+```
+
+### Controls:
+- `1`: Switch to Lambertian Shader
+- `2`: Switch to Blinn-Phong Shader
+- `3`: Switch to Per-Fragment Normal Shader
+- `M`: Toggle Mesh (`Single Triangle` -> `Two Triangles (Step 3 Q6)` -> `Rotating Sphere` -> `OBJ Model`)
+- `P`: Toggle Perspective / Orthographic projection
+- `W / A / S / D`: Move camera
+- `T`: Print FPS to console
+- `ESC`: Exit
+
+
+
 
 

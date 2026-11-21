@@ -1,24 +1,32 @@
 #version 330 core
 
-layout(location=0) in vec3 in_Position;
-layout(location=1) in vec3 in_Normal;
+layout(location = 0) out vec4 fragmentColor;
 
-uniform mat4 projMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 modelMatrix;
-uniform mat4 normalMatrix;
+uniform vec3 diffuseComponent;
+uniform vec3 diffuseColor;
 
-uniform vec4 lightPosWorld;
-
-out vec4 normal;
-out vec4 lightDir;
+in vec4 normal;
+in vec4 lightDir;
 
 void main(void)
 {
-  normal = normalize(normalMatrix * vec4(in_Normal, 0.0));
+    vec3 n = normalize(normal.xyz);
+    vec3 l = normalize(lightDir.xyz);
 
-  vec4 vertexWorldPos = modelMatrix * vec4(in_Position, 1.0);
-  lightDir = normalize(lightPosWorld - vertexWorldPos);
+    float val = max(0.0, dot(n, l));
 
-  gl_Position = projMatrix * viewMatrix * vertexWorldPos;
+    vec3 kd = diffuseComponent;
+    if (length(kd) == 0.0) {
+        kd = diffuseColor;
+    }
+    if (length(kd) == 0.0) {
+        kd = vec3(0.9, 0.5, 0.2); // nice warm orange
+    }
+
+    vec3 diffuseShading = vec3(kd.r * val, kd.g * val, kd.b * val);
+
+    // Small ambient so the unlit side doesn't disappear completely
+    vec3 ambient = 0.08 * kd;
+
+    fragmentColor = vec4(ambient + diffuseShading, 1.0);
 }

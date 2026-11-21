@@ -1,283 +1,198 @@
-Q: What is the visual characteristic of using an Orthographic projection to render a scene?
-    Parallel lines stay parallel and objects do not appear smaller as they get further away (there is no perspective foreshortening).
-
-Q: From class on Tuesday, what does the Orthographic Matrix do to vertices of your triangles?
-    It scales and translates the vertices from the orthographic viewing volume box [left, right] x [bottom, top] x [far, near] into the canonical view volume / NDC cube [-1, 1] x [-1, 1] x [-1, 1].
-
-Q: Write down the orthographic matrix.
-    [ 2/(r - l)       0             0        -(r + l)/(r - l) ]
-    [    0        2/(t - b)         0        -(t + b)/(t - b) ]
-    [    0            0        -2/(f - n)    -(n + f)/(f - n) ]
-    [    0            0             0                1        ]
-
-Q: Write down the dimensions of the box and the range of values it takes on.
-    Dimensions: 15 x 15 x 10
-    - X range: [-7.5, 7.5] (width = 15)
-    - Y range: [-7.5, 7.5] (height = 15)
-    - Z range: [-5.0, 5.0] (depth = 10, near = 5.0, far = -5.0)
-    Dimensions: 15 x 15 x 10
-    - X range: [-7.5, 7.5] (width = 15)
-    - Y range: [-7.5, 7.5] (height = 15)
-    - Z range: [-5.0, 5.0] (depth = 10, near = 5.0, far = -5.0)
-
-Q: Why would you use a uniform variable in a shader?
-    To pass values from the host (CPU code) to the device (GPU shaders) that stay constant for all vertices and fragments during a draw call, such as the model, view, and projection transformation matrices.    To pass values from the host (CPU code) to the device (GPU shaders) that stay constant for all vertices and fragments during a draw call, such as the model, view, and projection transformation matrices.
-
-Q: Which vector represents forward for your camera?
-    -m_W (or -Z in camera space)
-
-Q: Which vector represents left of your camera?
-    -m_U (or -X in camera space)
-
-Q: Why does moving forward or backward not change the scene with the orthographic projection?
-    Orthographic projection projects rays along parallel lines perpendicular to the view plane without perspective division. Moving the camera forward or backward only changes depth along the Z axis, which doesn't alter the projected X and Y coordinates on the screen as long as the geometry remains between the near and far clipping planes.
-
- Lab - Adding Matrices to your Vertex Shader
+[Lab]: GLSL Lambertian and Blinn-Phong Shaders
+Due: Tue Nov 17, 2026 3:48pm
+Missing
+3 Points Possible
+In Progress
+NEXT UP: Submit Assignment
+Unlimited Attempts Allowed
+Lab - GLSL Shaders
 Learning Outcomes
 
-    Use matrices to process vertices in your Vertex Shader
-    Update the View Matrix with your camera information for a dynamic, interactive scene
-
-Your goal in this lab is add the Camera (or View) Matrix (and the projection matrices) to your OpenGL code to render your triangle in an interactive manner.
+    Use uniform and varying variables to implement Lambertian and Blinn Phong shaders with GLSL.
+    Modify your VBO to contain the attributes you need for your shaders.
+    Use uniform variables to pass specific shader data as needed.
+ 
 What To Do In Lab
 
 I expect students to show up to lab and work on the week's tasks. The benefit of lab will be to get something done to help progress your code, learn some things about rendering, AND get support from (or provide support to) your peers.
 
-For lab, your goal within the hour will be to follow along as we add the code to support the View and Orthographic Projection matrices to render a single triangle. You will then need to add to the lab based on lecture on Thursday to add support for Perspective and (hopefully) Model matrices.
+For lab, your goal within the hour will be to modify your previous OpenGL code that renders a triangle so that you can use Lambertian and Blinn-Phong GLSL shaders. This will require that you modify the following components:
 
-    Note: This lab assumes that you've started reading over Chapter 17, Using Graphics Hardware. Specifically, Section 17.11 and 17.12 can be very helpful.  If you haven't done that yet, please read it now! Remember that you responsible for all reading to prepare you for what we do in this class and will be tested on these items.
+    Your VBO must now contain the normal vectors for each vertex.
+    Your Vertex Shader needs to process the the data you need to perform the shading by setting pertinent out variables at each vertex.
+    Your Fragment Shader will need to do the actual shader computation using the barycentric interpolated values passed by the vertex shader.
+    Note: This lab will be fully informed by you reading Section 17.13.
     You need to turn in answers to all questions to Canvas. Be sure to keep another document open so you can answer the various questions within this lab. 
 
- 
-Adding Support for an Orthographic Projection - Step 1
+Q: Explain what is meant by Per-Vertex Shading.
+    Per-vertex shading (also called Gouraud shading) calculates the lighting equations in the vertex shader at each vertex of the triangle. The resulting colors are then passed down to the rasterizer, which interpolates the color values across the face of the triangle to color the pixels. It is very fast since there are fewer vertices than pixels, but specular highlights can get distorted or missed completely if the highlight lands in the middle of a triangle.
 
-You should start with your code from the previous lab that rendered a triangle in coordinates that were specified in the Canonical View Volume (or Clip Coordinate Space). To move out of this confined space (where coordinates are between [-1, 1] in X, Y, and Z) so you can start to describe your scenes in more realistic coordinates, we need to add a Projection Matrix. In this Step, you will add support for an Orthographic Projection.
-
-Q: What is the visual characteristic of using an Orthographic projection to render a scene?
-    Parallel lines stay parallel and objects do not appear smaller as they get further away (there is no perspective foreshortening).
-
-Q: From class on Tuesday, what does the Orthographic Matrix do to vertices of your triangles?
-    It scales and translates the vertices from the orthographic viewing volume box [left, right] x [bottom, top] x [far, near] into the canonical view volume / NDC cube [-1, 1] x [-1, 1] x [-1, 1].
-
-Q: Write down the orthographic matrix.
-    [ 2/(r - l)       0             0        -(r + l)/(r - l) ]
-    [    0        2/(t - b)         0        -(t + b)/(t - b) ]
-    [    0            0        -2/(f - n)    -(n + f)/(f - n) ]
-    [    0            0             0                1        ]
-
-We will start by hard-coding your orthographic matrix. Recall that the orthographic "box" specifies a left, right, bottom, top, and near and far planes. I chose a box that is centered on the origin for this example, but this is not a requirement. 
-
- // The ortho parameters, in order: left, right, bottom, top, zNear, zFar
- float halfWidth = 15.0 / 2.0;
- float halfHeight = halfWidth;
-
- float left = -halfWidth;
- float right = halfWidth;
-
- float bottom = -halfHeight;
- float top = halfHeight;
-
- float near = 5.0f;
- float far = -5.0f;
-
- glm::mat4 M_ortho = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, near, far);
-
-One very important note  is that because the viewing direction looks down the -Z (or -W) direction for cameras, the far value will have a more negative value when we create this matrix.
-
-This code should be placed somewhere before you enter into your while loop. We need to create it once so we can use it within the while loop.
-
-Notice the size of the box we created above.
-
-Q: Write down the dimensions of the box and the range of values it takes on.
-    Dimensions: 15 x 15 x 10
-    - X range: [-7.5, 7.5] (width = 15)
-    - Y range: [-7.5, 7.5] (height = 15)
-    - Z range: [-5.0, 5.0] (depth = 10, near = 5.0, far = -5.0)
-
-Now, let's change your triangle vertices to be within this orthographic box. A suggested triangle might be the following, but you're welcome to use any triangle that fits within the orthographic box we defined.
-
-V0 = (-3.0f, -3.0f, 0.0f)
-V1 = (3.0f, -3.0f, 0.0f)
-V2 = (0.0f, 3.0f, 0.0f)
+Q: Explain what is meant by Per-Fragment Shading.
+    Per-fragment shading (also called Phong shading) calculates the lighting equations in the fragment shader for every single pixel/fragment. The vertex shader outputs geometric vectors (like the normal and light direction), which the rasterizer interpolates across the triangle. The fragment shader then re-normalizes those vectors and computes the full lighting equation per-fragment. This gives much smoother and more accurate lighting, especially for specular highlights, but it does more work since it runs on every fragment.
 
  
-Connecting the Matrices to Your Shader - Step 2
+Modifying Your VBO - Step 1
 
-We now need to modify your vertex shader. I would strongly suggest you make a copy of vertexShader_passthrough.glsl to a new shader file that you will use to better support vertex processing. Let's call it
+Your previous Vertex Buffer Object contained vertices and vertex colors. We no longer need the vertex colors but we will need vertex normals!  Modify your VBO appropriately for your triangle to set the correct normal vectors at each vertex.
 
-vertexShader_withMatrixTransformation.glsl
+Q: How do you need to modify the VBO for your triangle and what normal vector(s) do you need for your triangle's vertices?
+    Instead of storing position + RGB color for each vertex, we now store position + normal vector (nx, ny, nz). Each vertex is packed as 6 floats: (x, y, z, nx, ny, nz).
+    Since our triangle lies flat in the XY plane facing toward the camera along +Z, the surface normal points straight out along the Z axis, so all three vertices use the normal vector (0.0, 0.0, 1.0).
 
-You will want to modify your vertex shader to look like this:
+Q: Do you need to modify your VAO for your normals?  If so, why?  If not, why not?
+    Yes, we need to update the VAO because it tells OpenGL how to read the vertex data from the VBO. Attribute 0 is still the vec3 position at offset 0, but attribute 1 is now our vec3 normal vector at offset 3 * sizeof(float) (with a stride of 6 * sizeof(float)). We need to call glVertexAttribPointer for attribute 1 so the vertex shader's layout(location = 1) in vec3 in_Normal receives the normal data properly.
+
+ 
+Setting Appropriate Uniform Variables for the Vertex Shader - Step 2
+
+Your vertex shader will need to process the vertices, the normals, and a light position. You will need to make sure you pass in the following for uniform variables:
+
+    mat4 projMatrix, viewMatrix, modelMatrix, and normalMatrix
+    vec4 lightPosWorld
+
+The Vertex Shader will also need to transform the vectors appropriately so that they can be passed as varying variables out to the fragment shader.  In particular, this will mean having the following out variables:
+
+    out vec4 normal
+    out vec4 lightDir
+
+Note that I'm using vec4 here since it's easiest to do a matrix-vector multiplication with mat4 matrices.
+
+Your resulting vertex shader to prepare for Per-Fragment shading should look something like this:
 
 #version 330 core
 
 layout(location=0) in vec3 in_Position;
-layout(location=1) in vec3 in_Color;
+layout(location=1) in vec3 in_Normal;
 
 uniform mat4 projMatrix;
 uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
+uniform mat4 normalMatrix;
 
-out vec3 color;
+uniform vec4 lightPosWorld;
+
+out vec4 normal;
+out vec4 lightDir;
 
 void main(void)
 {
-  color = in_Color;
-  gl_Position = projMatrix * viewMatrix * vec4(in_Position, 1.0);
+  normal = normalize(normalMatrix * vec4(in_Normal, 0.0));
+
+  vec4 vertexWorldPos = modelMatrix * vec4(in_Position, 1.0);
+  lightDir = normalize(lightPosWorld - vertexWorldPos);
+
+  gl_Position = projMatrix * viewMatrix * vertexWorldPos;
 }
 
-There are a couple of things to notice here:
+I would rename your new vertex shader to something like "vertexShader_PrepForPerFragment.glsl" so it's well named for now.
 
-    Uniform variables that represent the two matrices we will need to use within the shader.  Read the last bullet below for more detail in Uniform variables.
-    Multiplication of the in_Position by these matrices to transform the vertex to the canonical view volume.
+Note: Be sure you use the GLSL normalize function correctly. It takes a vector as input and returns a normalized vector. 
+Computing the Lambertian Shader per Fragment - Step 3
 
-As a bit of recap, Section 17.12 contains the details for these new shaders.  Here are some key points for each:
+Your final step is to compute the actual Lambertian computation in your fragment shader.  Your fragment shader should look something like this:
 
-    Shaders create variables with different declaration types. In our current shaders, you see layout, in, out, and uniform. Variables that are declared without these keywords are local variables to the shader.  You may want to re-read Section 17.8 for a review of these terms too.
-    The layout constructs in the shader code determine the incoming and outgoing data.  For the vertex shader, we now have two sources of incoming data: the positions (location or attribute=0) and the color (location or attribute 1). These are both vec3 and have been given a unique variable name for use in the shader code.  
-    The in and out variable declaration determine what the shader will send (out) to the next shader or receive from (in) the previous shader. In this way, a vertex shader can pass or share data with the fragment shader that follows it. This is an important concept to understand because this is HOW per-vertex data is sent to the fragment shaders.  The fragment shader system on the graphics card will use barycentric interpolation to determine the exact value at each fragment using the alpha, beta, and gamma parameters of the fragment.  So if a color is set at each vertex, the color will be interpolated at each fragment in the fragment shader.
-    The uniform declarations are variables that are communicated from the host (your CPU code) to the device.  So this means that we will copy the projection matrix and the camera matrix from the host to the device before we run the shader. Uniform variables are the primary mechanism to send in different data types, from ints, floats, vec3, mat4, etc... from your host code to the device with GLSL.
+#version 330 core
 
- 
-Adding Code to Copy the Matrices to Your Shader - Step 3
+layout(location=0) out vec4 fragmentColor;
 
-There are a couple steps you need to do this.  We have a shader that has uniform variables for a projection matrix (projMatrix) and a view or camera matrix (viewMatrix).  On the host, we need to get a handle to these uniform variables so that we can copy data into them from the host.
+uniform vec3 diffuseComponent;
 
-To get a handle to your uniform variables, you will use my GLSL shader code to get this reference. If you're interested in the underlying call, feel free to look at GLSL.[h,cpp].  Since we called our variables projMatrix and viewMatrix, we can use those names to get handles to those variables in the shader.
+in vec4 normal;
+in vec4 lightDir;
 
-For example, in you code. right after you load the shaders and call "createProgram" in my GLSL interface, you will need to make the following call to get the identifier that refers to the projMatrix variable in the shader:
+void main(void)
+{
+  float val = max(0.0, dot(normal, lightDir));
+  vec3 diffuseShading = vec3( diffuseComponent.r * val, diffuseComponent.g * val, diffuseComponent.b * val );
 
-GLint projMatrixID = shader.createUniform("projMatrix");
-
-The call to createUniform can be used to get a reference to any uniform variable in the shaders if you want to communicate host data to the device shaders. Once the shader program is created, you can get a handle to the uniform shader variables.  
-
-Here is the complete example including the loading of the shaders:
-
-  // Create a shader using my GLSLObject class                                                                                                       
-  sivelab::GLSLObject shader;
-  shader.addShader( "vertexShader_withMatrices.glsl", sivelab::GLSLObject::VERTEX_SHADER );
-  shader.addShader( "fragmentShader_barycentric.glsl", sivelab::GLSLObject::FRAGMENT_SHADER );
-  shader.createProgram();
-
-  GLuint projMatrixID, viewMatrixID;
-  projMatrixID = shader.createUniform( "projMatrix" );
-  viewMatrixID = shader.createUniform( "viewMatrix" );
-
-Q: Why would you use a uniform variable in a shader?
-    To pass values from the host (CPU code) to the device (GPU shaders) that stay constant for all vertices and fragments during a draw call, such as the model, view, and projection transformation matrices.
- 
-Copying Matrices to the Device
-
-We're almost ready to make this work. We already created an orthographic projection matrix in Step 1.  However, we have not yet created a view (or camera) matrix. For this step, we will hard-code your camera so, before you enter the while loop that redraws the screen each time, we can use some code like this: 
-
-...
-glm::vec3 m_pos(0,0,0), m_viewDir(0,0,-1);
-glm::vec3 m_U(1,0,0), m_V(0,1,0), m_W(0,0,1);
-
-double timeDiff = 0.0, startFrameTime = 0.0, endFrameTime = 0.0;
-
-/* Loop until the user closes the window */
-while (!glfwWindowShouldClose(window)) {
-...
-
-Do those values and basis vectors look familiar?  They should.  That is the default camera location and orientation. 
-
-With this data and the orthographic projection matrix you created in Step 1 (M_ortho), we are ready to copy two matrices to the device within the game loop.
-
-// create the view matrix from our camera data                                                                                                   
-glm::mat4 M_view = glm::lookAt( m_pos, m_pos - m_W, m_V );
-
-/* Render your objects here */
-shader.activate();
-
-// copy from the host to the device the view matrix and the projection matrix                                                                                       
-glUniformMatrix4fv(projMatrixID, 1, GL_FALSE, glm::value_ptr( M_ortho ));
-glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, glm::value_ptr( M_view ));
-
-glBindVertexArray(m_VAO);
-glDrawArrays(GL_TRIANGLES, 0, 3);
-glBindVertexArray(0);
-
-shader.deactivate();
-
-In this step there are some things to note:
-
-    We use GLM's lookAt function to create the View or Camera Matrix for us (M_view).  We could have constructed it on our own but this is a nice function to help us create that matrix. The function takes the position of the camera as the first argument, the point in space where the camera is looking (m_pos - m_W gets us that location), and the Up vector from the camera. Note that we hard-coded the camera here as the default, but your camera classes have everything you need to generalize this to any view.  More info on GLM's functions can be found here: OpenGL GLM Documentation Page
-    We also use OpenGL functions (glUniform*) to copy different types of data from the host to the device. In this case, we copy a Matrix 4. We use the Uniform variable handles we got previously to copy the different matrices to the GPU.  More information on the many glUniform function calls can be found here: Link to OpenGL glUniform Documentation
-    Specifically, the glUniformMatrix4fv call we made here needs the uniform variable handle as the first argument, the size of the type (in this case just 1) as the second argument, whether to automatically transpose the matrix (FALSE in this case -- we want the matrix as is when we copy it), and a pointer to the data to copy as the fourth argument, which we get by using GLM's value_ptr function.
-
-You should now be able to run this code and see your new triangle's coordinate show up.  Here's what it looks like with my code:
-
-orthographic triangle
-
- 
-Moving Your Camera - Step 4
-
-We will now make one last, simple addition to your code.  We're going to move the camera!  To move the camera with the code above, we only need to modify the camera's position, m_pos. We will do that with the following code:
-
-...
-/* Poll for and process events */
-glfwPollEvents();
-
-float moveRatePerFrame = 0.05;
-
-if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-   m_pos = m_pos + -m_W * moveRatePerFrame;
-}
-else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-   m_pos = m_pos - m_U * moveRatePerFrame;
-}
-else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-   m_pos = m_pos + m_W * moveRatePerFrame;
-}
-else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-   m_pos = m_pos + m_U * moveRatePerFrame;
+  fragmentColor = vec4(diffuseShading, 1.0);
 }
 
-if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
-   std::cout << "fps: " << 1.0 / timeDiff << std::endl;
-}
+Note that you will need to set a uniform variable for the diffuse color of the Lambertian shader and pass it in to the fragment shader:
 
-Now, run your code and move your camera!  Because you're using an orthographic camera you will not notice any forward or backward movement, but strafing will definitely work!
+    uniform vec3 diffuseComponent
 
-strafing examplestrafing examplestrafing examplestrafing example
+When you develop a Blinn-Phong shader, you will also need to pass in the specular and Phong exponent values too.
 
-Q: Which vector represents forward for your camera?
-    -m_W (or -Z in camera space)
+Q: Where will you place your light so that the triangle is lit as you might expect given it's position?
+    We place the light in front of the triangle with a positive Z coordinate (for example, at (3.0, 4.0, 5.0) in world space). Since the triangle faces towards +Z, placing the light in front and slightly above/to the side ensures that the dot product between the surface normal and the light direction is positive (N · L > 0), creating clear lighting across the front face. If the light were behind the triangle (z <= 0), the front face would be in shadow.
 
-Q: Which vector represents left of your camera?
-    -m_U (or -X in camera space)
+Q: Consider rendering a scene with two triangles that use your one VBO.  Triangle 1 should be translated to (-2, 1, 4) and Triangle 2 should be translated to (2, -1, 4).  Triangle 1 is blue Lambertian.  Triangle 2 is red Lambertian. How will you render this scene using only your one VBO?  Write down what you would need to do -- pseudo-code or real code is good.
+    We keep the same VBO and VAO bound, but issue two separate draw calls, updating the model matrix, normal matrix, and diffuse color uniform before each draw:
 
-Q: Why does moving forward or backward not change the scene with the orthographic projection?
-    Orthographic projection projects rays along parallel lines perpendicular to the view plane without perspective division. Moving the camera forward or backward only changes depth along the Z axis, which doesn't alter the projected X and Y coordinates on the screen as long as the geometry remains between the near and far clipping planes.
+    // --- Draw Triangle 1 (Blue at (-2, 1, 4)) ---
+    glm::mat4 model1 = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.0f, 4.0f));
+    glm::mat4 normMat1 = glm::transpose(glm::inverse(model1));
+    glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(model1));
+    glUniformMatrix4fv(normalMatrixID, 1, GL_FALSE, glm::value_ptr(normMat1));
+    glUniform3f(diffuseComponentID, 0.0f, 0.0f, 1.0f); // Blue
+    glBindVertexArray(m_triangleVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 
- 
-Perspective Matrix and Model Matrix Additions - Step 5
-
-Using the code above as a starting point and the notes from lecture this week, as well as the reading, you are to add support for the Perspective Matrix and a Model Matrix. This will allow you to view your scenes with linear perspective and also dynamically translate/scale/rotate your triangle.  The goal will be to have a much more dynamically rendered scene. You should also work to add in your own Camera class data to support the different projection and view matrices, rather than hard-coding the projection and view matrices. 
-
-For Step 5, you will need to:
-
-    Add support for a Perspective Projection.
-    Add support for a Model Matrix and change the matrix during the rendering loop so that the Triangle's position, scale, or orientation are modified as the program is running
-    Use your Camera classes to retrieve the projection matrix data and view matrix data so that you can construct the necessary matrices rather than using simplified data or the default camera setup as we did in the first parts of this lab.
-
-Implementation details:
-1. Model Matrix:
-   Inside the render loop, compute a rotating model matrix using the elapsed time:
-   float angle = (float)glfwGetTime() * 0.8f;
-   glm::mat4 M_model = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f));
-   glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(M_model));
-
-2. Perspective Projection & Toggle:
-   glm::mat4 M_persp = glm::perspective(glm::radians(60.0f), aspectRatio, 0.1f, 100.0f);
-   Pressing 'P' toggles between Orthographic (M_ortho) and Perspective (M_persp) projections interactively.
-
-3. Vertex Shader (vertexShader_withMatrixTransformation.glsl):
-   gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(in_Position, 1.0);
-
-4. Screen Capture:
-   Saved image of the rendered triangle with matrix transformations to OpenGL/triangle_matrices.png
+    // --- Draw Triangle 2 (Red at (2, -1, 4)) ---
+    glm::mat4 model2 = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, -1.0f, 4.0f));
+    glm::mat4 normMat2 = glm::transpose(glm::inverse(model2));
+    glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, glm::value_ptr(model2));
+    glUniformMatrix4fv(normalMatrixID, 1, GL_FALSE, glm::value_ptr(normMat2));
+    glUniform3f(diffuseComponentID, 1.0f, 0.0f, 0.0f); // Red
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
 
  
 
-Be sure to save your code back to your repository on github.com by committing and pushing your changes back to your repository on github.  Be sure to turn in any answers to the questions posed in this lab including a screenshot of your background color in the window.
+Render your scene and make sure to include a screenshot of your Lambertian-shaded triangle.
+
+Here's what it looks like with my code.  Pretty simple. It will look at lot more interesting when you do the Blinn-Phong shader. Depending on how far away your light is from the triangle, you'll get images like this:
+
+Lambertian lit trianglelambertian
+
+ 
+Create a Blinn-Phong Shader - Step 4
+
+Using your Lambertian Shader as a starting point, create a shader for Blinn-Phong and show it working.
+
+blinn phong render 0blinn phong render 1blinn phong render 2 
+
+ 
+
+Q: What "coordinate space" are the shading calculations in for the shaders you've created so far in this lab?  How do you know they are in that space?
+    The shading calculations are in World Space.
+    We know this because:
+    1. In the vertex shader, vertex coordinates are transformed by the model matrix to world space:
+       vec4 vertexWorldPos = modelMatrix * vec4(in_Position, 1.0);
+    2. The light position is supplied directly in world coordinates (lightPosWorld), and lightDir is calculated as normalize(lightPosWorld - vertexWorldPos).
+    3. The normal is transformed by the normalMatrix (the transpose inverse of modelMatrix), which puts it into world space.
+    Since both vectors passed into the dot product in the fragment shader are expressed in world space, the lighting computation happens in world space.
+
+ 
+Normal Shader - Step 5
+
+While your creating shaders, create a per-Fragment normal shader and demonstrate that it works.
+
+ 
+
+Be sure to save your code back to your repository on github by committing and pushing your changes.  Be sure to turn in any answers to the questions posed in this lab including a screenshot of your background color in the window.
+
+
+
+Programming Skill Development - Silver Level - Real-time Rasterization with OpenGL
+
+For the second programming skill development, you will transition from the an image-order algorithm (the ray- or path- tracer) to the high-performance world of real-time rasterization (an object-order algorithm). You are to build a functional OpenGL application that can load triangle meshes and render them using the same shading logic (Lambertian and Blinn-Phong) you developed in the Bronze stage for your ray tracers.
+
+To reach the Silver level, your software must:
+
+    Initialize an OpenGL Context: Setup a window using GLFW that can handle a real-time render loop (you've already got this in my starter code!)
+    Load Triangle Meshes from your scenes. You are welcome to integrate the provided OBJ loader for more complicated 3D models. You do want to be able to try to render a lot of triangles, so at the very least, consider the "lots of triangles" code I provided earlier too, or create your own interesting scene with lots of triangles!
+    Convert spheres to triangles so you can render those shapes.
+    Implement GLSL Shaders: Move your shading logic from C++ to the GPU. You must implement a Vertex Shader and a Fragment Shader.
+    Support Multiple Shading Models: Implement both Lambertian (Diffuse) and Blinn-Phong (Specular) shading within your GLSL code.
+    Transformation Pipeline: Correctly implement the Model, View, and Perspective matrices to transform coordinates from Local space to Screen space and render your triangles to the screen!
+
+ 
+What to Turn-In
+
+    Please make sure we have access to your git repository. It should be the same as the previous assignment, but if not, let us know.
+    README.md: Documentation on how to build and run, including detailed information about the controls for your interactive camera.
+    The "Side-by-Side" Comparison: Submit two images of the same scene: one rendered by your Ray Tracer and one rendered by your OpenGL Rasterizer.
+    In your README, briefly explain any visual differences between the two (e.g., lack of shadows in the rasterizer, or differences in specular highlights).
+    Creative Scene: Render your own scene that shows off your real-time shading and camera movement.
