@@ -12,7 +12,7 @@
 ## Compared to ray tracer
 - no shadows, or mirrors. I believe thats it
 
-###LOADING STUFF in raytracer<br>
+### LOADING STUFF in raytracer<br>
 -w (int) width<br>
 -h (int) height<br>
 -o (string) output file name<br>
