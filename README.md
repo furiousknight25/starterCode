@@ -9,6 +9,9 @@
   W/A/S/D: Move camera
   ESC: Exit
 
+## Compared to ray tracer
+- no shadows, or mirrors. I believe thats it
+
 WASD to move around 
 #LOADING STUFF<br>
 -w (int) width<br>
